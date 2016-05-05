@@ -1,9 +1,43 @@
 'use strict';
 
+interface Column {
+  header: any ; 
+}
+
 class View1Ctrl {
-  message: string = 'hello...';
-  constructor() {
+  
+  data: any[] = [] ;
+  
+  static $inject = [ '$scope' ]; // , '$element'
+
+  loaded = false;
+
+  constructor($scope) {
     
+    fetch('data/materials.json')
+        .then(r=>r.json())
+        .then(data=> {
+            this.data = data;
+            this.onDataLoaded(data);
+            this.loaded = true;
+            $scope.$apply();
+        });
+
+  }
+
+  columns: Column[] = [];
+  
+  onDataLoaded(data: any[]){
+    
+    var first = _.first(data);
+      
+    for(var key in first){
+        this.columns.push( {
+        header: key
+      })
+    }
+    
+
   }
 }
 
@@ -16,4 +50,4 @@ angular.module('ngShell.view1', ['ngRoute'])
   });
 }])
 
-.controller('View1Ctrl', [View1Ctrl]);
+.controller('View1Ctrl', View1Ctrl );

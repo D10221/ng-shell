@@ -1,4 +1,28 @@
-<div ng-controller="View1Ctrl as vm">
-    <span>{{vm.message}}</span>
-    <p>This is the partial for view 1.</p>
+<div ng-controller="View1Ctrl as vm" style="margin-top: 100px;margin-left: 100px">
+    <table class="mdl-data-table mdl-js-data-table  mdl-shadow--2dp full-width" ng-if="vm.loaded">
+        <thead>
+            <tr>
+                <th ng-repeat="column in vm.columns" >
+                    <span mdl-upgrade>{{ column.header }}</span>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
+            <td>25</td>
+            <td>$2.90</td>
+        </tr>
+        <tr>
+            <td class="mdl-data-table__cell--non-numeric">Plywood (Birch)</td>
+            <td>50</td>
+            <td>$1.25</td>
+        </tr>
+        <tr>
+            <td class="mdl-data-table__cell--non-numeric">Laminate (Gold on Blue)</td>
+            <td>10</td>
+            <td>$2.35</td>
+        </tr>
+        </tbody>
+    </table>
 </div>
