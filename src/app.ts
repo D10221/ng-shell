@@ -1,36 +1,14 @@
 ///<reference path="definitions.d.ts"/>
+import './view2/view2'
+import './view1/view1'
+import './components/version/version.ts'
+import './components/version/interpolate-filter'
+import './components/version/version-directive.ts'
+import {SideNavSvc} from "./SideNavSvc";
+import {NgShellRoot} from "./NgShellRoot";
+import {upgradeElementsDirective} from "./mdlUpgrade";
 
-class SideNavSvc {
 
-    isOpen:boolean = true;
-
-    toggleOpen:()=> void = ()=> {
-        this.isOpen = !this.isOpen;
-    };
-
-    navItems = [
-        {
-            href: '#/view1',
-            label: 'view 1',
-            icon: 'checked'
-        },
-        {
-            href: '#/view2',
-            label: 'view 2',
-            icon: 'checked'
-        }]
-}
-
-class NgShellRoot {
-
-    static $inject = ['SideNavSvc'];
-
-    brand = 'Tiny-x';
-
-    constructor(public  sideNav:SideNavSvc) {
-
-    }
-}
 
 // Declare app level module which depends on views, and components
 angular
@@ -44,32 +22,15 @@ angular
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.otherwise({redirectTo: '/view1'});
     }])
+    //
     .service('SideNavSvc', SideNavSvc)
+    //
     .controller('NgShellRoot', NgShellRoot)
-    .directive('mdlUpgrade', function($timeout:ng.ITimeoutService) {
-
-        return {
-            restrict: 'A',
-            compile: function() {
-                return {
-                    pre: function postLink(scope, element) {
-                        $timeout(() => {
-                            componentHandler.upgradeElements(element[0]);
-                        }, 0);
-                    },
-                    post: function postLink(scope, element) {
-                        $timeout(() => {
-                            componentHandler.upgradeElements(element[0]);
-                        }, 0);
-                    }
-                };
-            },
-        };
-
-    })
+    //
+    .directive('mdlUpgrade', upgradeElementsDirective)
+    //
     .run(function ($rootScope,$timeout) {
         $rootScope.$on('$viewContentLoaded', ()=> {
-
             $timeout(() => {
                 componentHandler.upgradeAllRegistered();
             })
