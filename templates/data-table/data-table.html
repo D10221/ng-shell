@@ -1,7 +1,8 @@
-<div class="mdl-card mdl-shadow--2dp" style="width: 90%" ng-controller="TnxTableCtrl as vm">
+<div class="mdl-card mdl-shadow--2dp" style="width: 100%" ng-controller="TnxTableCtrl as vm">
     <div class="mdl-card__title">
         <h2 class="mdl-card__title-text">{{ vm.table.header || 'NotFound' }}</h2>
     </div>
+    <div ng-if="vm.noData()"> No Data </div>
     <div>
         <table class="mdl-data-table mdl-js-data-table mdl-data-table--selectable">
             <thead>

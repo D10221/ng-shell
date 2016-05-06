@@ -10,6 +10,8 @@ export class TnxTableCtrl {
     
     table: iTable ;
     
+    noData () :boolean { return _.isEmpty( this.table.elements) }
+    
     constructor($scope) {
         
         var vm = $scope.source;
