@@ -1,5 +1,5 @@
 'use strict';
-import {KeyValue, EventArgs} from "../infrastructure/interfaces";
+import {EventArgs} from "../infrastructure/interfaces";
 
 class View1Ctrl {
 

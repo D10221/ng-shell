@@ -10,7 +10,7 @@ export class TnxTableCtrl {
     
     table: iTable ;
     
-    noData () :boolean { return _.isEmpty( this.table.elements) }
+    noData () :boolean { return !this.table || _.isEmpty( this.table.elements) }
     
     constructor($scope) {
         

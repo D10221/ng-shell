@@ -27,6 +27,28 @@ angular.module('ngShell', [
     //     $compileProvider.debugInfoEnabled(false);
     // }])
     // Material Design Lite (mdl)
+    // https://github.com/jadjoubran/angular-material-design-lite/blob/master/src/angular-material-design-lite.js
+    .directive('mdlUpgrade', function($timeout) {
+
+        return {
+            restrict: 'A',
+            compile: function() {
+                return {
+                    post: function postLink(scope, element) {
+                        $timeout(function() {
+                            try {
+                                componentHandler.upgradeAllRegistered();
+                            } catch (e) {
+                                // ??
+                            }
+                        }, 0);
+                    }
+                };
+            },
+        };
+
+    })
+    // Material Design Lite (mdl)
     .run(($rootScope,$timeout)=> {
         $rootScope.$on('$viewContentLoaded', ()=>{
             $timeout(()=>{
