@@ -1,26 +1,90 @@
-<div class="mdl-card mdl-shadow--2dp" style="width: 100%" ng-controller="TnxTableCtrl as vm">
-    <div class="mdl-card__title">
-        <h2 class="mdl-card__title-text">{{ vm.table.header || 'NotFound' }}</h2>
+<style>
+    .strike-through {
+        text-decoration: line-through;
+
+    }
+</style>
+<div class="mdl-card mdl-shadow--2dp"
+     style="width: 100%;max-height: 650px"
+     ng-controller="TnxTableCtrl as vm">
+    <div class="mdl-card__title" style="margin-top: 32px">
+        <h2 class="mdl-card__title-text">
+            {{ vm.table.header || 'NotFound' }}
+        </h2>
     </div>
-    <div ng-if="vm.noData()"> No Data</div>
-    <div>
-        <table class="mdl-data-table mdl-js-data-table">
-            <thead>
+    <table class="mdl-data-table mdl-js-data-table"
+           style="display: block;overflow-x: auto;">
+        <thead>
             <tr>
+                <th>
+                     <button ng-click="vm.toggleSelected(vm.table.elements)"
+                             class="mdl-button mdl-js-button mdl-button--icon">
+                        <i class="material-icons">swap_vert</i>
+                    </button>
+                </th>
                 <th class="mdl-data-table__cell--non-numeric"
-                    ng-repeat="column in vm.table.columns">{{ column.header }}
+                    ng-repeat="column in vm.table.columns"
+                    ng-show="vm.isVisible(column)">
+                        <div style="display: flex;">
+                            <span>{{ column.header }}</span>
+                            <div>
+                                <button id="{{ 'column_action_' + column.key }}"
+                                        class="mdl-button mdl-js-button mdl-button--icon"
+                                        mdl-upgrade>
+                                    <i class="material-icons">keyboard_arrow_down</i>
+                                </button>
+
+                                <ul class="mdl-menu mdl-menu--bottom mdl-js-menu mdl-js-ripple-effect"
+                                    for="{{ 'column_action_' + column.key }}">
+                                    <li class="mdl-menu__item">
+                                        <div style="display: flex; flex-direction: row; justify-content:space-between;align-items: center; margin: 5px">
+                                            <span>filter</span>
+                                            <i class="material-icons" data-bind="command: toggleFilterVisible ">filter_list</i>
+                                        </div>
+                                    </li>
+                                    <li class="mdl-menu__item">
+                                        <div style="display: flex; flex-direction: row; justify-content:space-between;align-items: center; margin: 5px"
+                                             ng-click="vm.toggleVisibility(column)">
+                                            <span>hide</span>
+                                            <i class="material-icons" >visibility</i>
+                                        </div>
+                                    </li>
+                                    <li class="mdl-menu__item">
+                                        <div style="display: flex; flex-direction: row; justify-content:space-between;align-items: center; margin: 5px">
+                                            <i class="material-icons" data-bind=" command: { command: moveCmd, parameter: '-' }">chevron_left</i>
+                                            <span>move</span>
+                                            <i class="material-icons" data-bind=" command: { command: moveCmd, parameter: '+' }">chevron_right</i>
+                                        </div>
+                                    </li>
+                                    <li class="mdl-menu__item">
+                                        <div style="display: flex; flex-direction: row; justify-content:space-between;align-items: center; margin: 5px">
+                                            <i class="material-icons" data-bind="command: { command: setSortDirection, parameter: 'asc' }">keyboard_arrow_down</i>
+                                            <span> sort </span>
+                                            <i class="material-icons" data-bind="command: { command: setSortDirection, parameter: 'desc'}">keyboard_arrow_up</i>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                 </th>
             </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="row in vm.table.elements">
-                <td ng-repeat="cell in row.elements">
-                    {{cell.value}}
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+        </thead>
+        <tbody >
+        <tr ng-repeat="row in vm.table.elements">
+            <td class="mdl-data-table__cell--non-numeric">
+                <button class="mdl-button mdl-js-button mdl-button--icon"
+                        ng-click="vm.toggleSelected(row)">
+                    <i class="material-icons">{{ row.isSelected? 'checked' : 'crop_square'}}</i>
+                </button>
+            </td>
+            <td class="mdl-data-table__cell--non-numeric"
+                ng-repeat="cell in row.elements"
+                ng-show="vm.isVisible(cell)">
+                {{cell.value}}
+            </td>
+        </tr>
+        </tbody>
+    </table>
     <div class="mdl-card__actions mdl-card--border">
         <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
             <!-- Right aligned menu below button -->
@@ -47,14 +111,27 @@
             <!-- Right aligned menu below button -->
             <i class="material-icons">autorenew</i>
         </button>
+        <button id="{{ 'table_column_visibility_' + vm.table.key }}"
+                class="mdl-button mdl-b">
+            <i class="material-icons" >visibility</i>
+        </button>
+        <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+            for="{{ 'table_column_visibility_' + vm.table.key }}">
+            <li class="mdl-menu__item"
+                ng-repeat="column in vm.table.columns"
+                ng-click="vm.toggleVisibility(column)">
+                <div>
+                    <span ng-class="vm.isVisible(column) ? '': 'strike-through'">{{ column.header }}</span>
+                </div>
+            </li>
+        </ul>
         <button id="{{ 'table_menu_' + vm.table.key }}"
                 class="mdl-button mdl-js-button mdl-button--icon">
             <i class="material-icons">more_vert</i>
         </button>
         <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
             for="{{ 'table_menu_' + vm.table.key }}"
-            mdl-upgrade
-        >
+            mdl-upgrade>
             <li class="mdl-menu__item">Some Action</li>
             <li class="mdl-menu__item">Another Action</li>
             <li disabled class="mdl-menu__item">Disabled Action</li>

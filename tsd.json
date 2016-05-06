@@ -39,10 +39,10 @@
       "commit": "73f7bb99692823f1811817f9753a02b57af5305e"
     },
     "rx/rx.d.ts": {
-      "commit": "02ba1e3e95a3cb503656ca0415e0febc3bf8ba71"
+      "commit": "ea5859b23c4c533a8cf228cc8ae577cab264493c"
     },
     "rx/rx-lite.d.ts": {
-      "commit": "02ba1e3e95a3cb503656ca0415e0febc3bf8ba71"
+      "commit": "ea5859b23c4c533a8cf228cc8ae577cab264493c"
     }
   }
 }

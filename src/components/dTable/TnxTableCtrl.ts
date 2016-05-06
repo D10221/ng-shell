@@ -1,7 +1,7 @@
 
 import {EventArgs} from "../../infrastructure/interfaces";
 import {Guid} from "../../infrastructure/Guid";
-import {DataSource, iTable, iColumn, iRow, iCell} from "./interfaces";
+import {DataSource, iTable, iColumn, iRow, iCell, TableElement, TableElementRole, Visibility} from "./definitions";
 
 
 export class TnxTableCtrl {
@@ -12,7 +12,7 @@ export class TnxTableCtrl {
     
     noData () :boolean { return !this.table || _.isEmpty( this.table.elements) }
     
-    constructor($scope) {
+    constructor(private $scope) {
         
         var vm = $scope.source;
 
@@ -48,8 +48,10 @@ export class TnxTableCtrl {
             parent: null, 
             elements : [],
             isSelected: false,
+            visibility: Visibility.visible,
             columns: [],
-            source: data.items
+            source: data.items,
+            role: TableElementRole.table
         };
         
         table.columns = this
@@ -77,6 +79,8 @@ export class TnxTableCtrl {
                 parent: table,
                 elements : [],
                 isSelected: false,
+                visibility: Visibility.visible,
+                role: TableElementRole.column
             })
         }
         
@@ -98,7 +102,9 @@ export class TnxTableCtrl {
                 id: Guid.newGuid(),
                 parent: table,
                 elements: [] ,
-                isSelected: false
+                isSelected: false,
+                visibility: Visibility.visible,
+                role: TableElementRole.row
             };
             
             row.elements = this.makeCell(row);
@@ -122,10 +128,73 @@ export class TnxTableCtrl {
                 value: row.source[column.key],
                 parent: row,
                 elements: [],
-                isSelected: false
+                isSelected: false,
+                visibility: Visibility.visible,
+                role: TableElementRole.cell
             });
         }
         
         return cells;
     }
+
+    toggleSelected(e:TableElement[]):void;
+    toggleSelected(e:TableElement):void;
+    toggleSelected(e:any): void {
+
+        if(TnxTableCtrl.isTableElement(e)){
+            e.isSelected = !e.isSelected;
+            return;
+        }
+
+        if(_.isArray(e)){
+            _.forEach(e, this.toggleSelected )
+        }
+    }
+    
+    static isTableElement(x:any) : boolean {
+        return x && (x as TableElement).role in [
+                TableElementRole.table,
+                TableElementRole.column,
+                TableElementRole.row,
+                TableElementRole.cell
+            ];         
+    }
+    
+    toggleVisibility(e: TableElement){
+
+        TnxTableCtrl.toggleVisibilityInternal(e);
+
+        if(e.role == TableElementRole.column) {
+            
+            var table = e.parent as iTable;
+            
+            (table.elements as iRow[]).forEach(
+                
+                row => {
+                    
+                    (row.elements as iCell[]).forEach(
+                        
+                        cell=> {
+                            if(cell.key == e.key){
+                                cell.visibility = e.visibility;
+                            }
+                        }
+                    )
+                }
+            );
+        }
+
+
+    }
+
+    static toggleVisibilityInternal(e:TableElement) {
+        e.visibility = e.visibility == Visibility.visible
+            ? Visibility.hidden
+            : Visibility.visible;
+    }
+
+    isVisible(e:TableElement) : boolean {
+        return e.visibility == Visibility.visible;
+    }
+
 }

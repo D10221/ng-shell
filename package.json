@@ -41,9 +41,9 @@
     "angular-aria": "^1.5.5",
     "angular-material": "^1.0.8",
     "angular-route": "^1.5.5",
+    "lodash": "^4.11.1",
     "material-design-lite-oob": "git+https://git@github.com/D10221/material-design-lite-oob.git",
-    "whatwg-fetch": "^0.11.0",
-    "lodash": "^4.11.1"
+    "rx": "^4.1.0",
+    "whatwg-fetch": "^0.11.0"
   }
 }
-

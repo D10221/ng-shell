@@ -1,13 +1,22 @@
 import {Guid} from "../../infrastructure/Guid";
 
+export enum TableElementRole {
+    table, column, row, cell
+}
+
+export enum Visibility {
+    visible, hidden 
+}
+
 export interface TableElement {
     id: Guid;
     key: string;
     parent: TableElement ;
     elements: TableElement[];
     isSelected: boolean;
+    visibility: Visibility;
     index: number;
-    role: string ;
+    role: TableElementRole ;
 }
 
 export interface iTable extends TableElement {
