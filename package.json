@@ -18,7 +18,7 @@
     "shelljs": "^0.2.6"
   },
   "scripts": {
-    "postinstall": "echo #tsd install ? ",
+    "postinstall": "tsd install",
     "prestart": "npm install",
     "start": "http-server -a localhost -p 8000 -c-1",
     "pretest": "npm install",
@@ -29,15 +29,21 @@
     "preprotractor": "npm run update-webdriver",
     "protractor": "protractor e2e-tests/protractor.conf.js",
     "update-index-async": "node -e \"require('shelljs/global'); sed('-i', /\\/\\/@@NG_LOADER_START@@[\\s\\S]*\\/\\/@@NG_LOADER_END@@/, '//@@NG_LOADER_START@@\\n' + sed(/sourceMappingURL=angular-loader.min.js.map/,'sourceMappingURL=bower_components/angular-loader/angular-loader.min.js.map','app/bower_components/angular-loader/angular-loader.min.js') + '\\n//@@NG_LOADER_END@@', 'app/index-async.html');\"",
-    "build": "tsc",
-    "clean": "rm built -rf",
-    "rebuild": "npm run clean && npm run build"
+    "build-ts": "tsc",
+    "build-clean": "rm built -rf",
+    "built-ts-rebuild": "npm run build-clean && npm run build-ts",
+    "build-webpack": "webpack",
+    "build-webpack-rebuild": "npm run build-clean && webpack"
   },
   "dependencies": {
     "angular": "^1.5.5",
     "angular-animate": "^1.5.5",
     "angular-aria": "^1.5.5",
     "angular-material": "^1.0.8",
-    "angular-route": "^1.5.5"
+    "angular-route": "^1.5.5",
+    "material-design-lite-oob": "git+https://git@github.com/D10221/material-design-lite-oob.git",
+    "whatwg-fetch": "^0.11.0",
+    "lodash": "^4.11.1"
   }
 }
+

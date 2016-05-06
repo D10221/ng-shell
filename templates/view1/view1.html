@@ -1,4 +1,26 @@
-<div ng-controller="View1Ctrl as vm">
-    <span>{{vm.message}}</span>
-    <p>This is the partial for view 1.</p>
+<div class="mdl-tabs mdl-js-tabs" ng-controller="View1Ctrl as vm">
+    <div class="mdl-tabs__tab-bar">
+        <a href="#tab1" class="mdl-tabs__tab">Materials Tab</a>
+        <a href="#tab2" class="mdl-tabs__tab">Tab Two</a>
+        <a href="#tab3" class="mdl-tabs__tab">Tab Three</a>
+    </div>
+    <div class="mdl-tabs__panel is-active" id="tab1">
+        <div class="page-content">
+            <!-- Your content goes here -->
+            <div class="mdl-grid" style="padding-top: 50px">
+                <div class="mdl-cell mdl-cell--1-col"></div>
+                <div class="mdl-cell mdl-cell--10-col">
+                    <tnx-table source="vm"></tnx-table>
+                </div>
+                <div class="mdl-cell mdl-cell--1-col"></div>
+            </div>
+        </div>
+    </div>
+    <div class="mdl-tabs__panel" id="tab2">
+        <p>Second tab's content.</p>
+    </div>
+    <div class="mdl-tabs__panel" id="tab3">
+        <p>Third tab's content.</p>
+    </div>
 </div>
+
