@@ -19,14 +19,26 @@ export interface TableElement {
     role: TableElementRole ;
 }
 
+export interface  Filter {
+    visibility: Visibility;
+    value: any;
+}
+
 export interface iTable extends TableElement {
     header : any ;
     source: any[];
     columns:iColumn [] ;
+    
+    /***
+     * Column.Key
+     */
+    orderBy? : string;
+    reverseOrder?: boolean;
 }
 
 export interface iColumn extends TableElement {
     header: any;
+    filter: Filter ;
 }
 
 export interface iRow extends TableElement {

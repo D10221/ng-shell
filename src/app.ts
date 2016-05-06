@@ -22,6 +22,19 @@ angular.module('ngShell', [
     }])
     .service('sideNav', SideNav)
     .controller('NgShellRoot', NgShellRoot)
+    .directive('onEnter', function () {
+        return function (scope, element, attrs) {
+            element.bind("keydown keypress", function (event) {
+                if(event.which === 13) {
+                    scope.$apply(function (){
+                        scope.$eval(attrs.onEnter);
+                    });
+
+                    event.preventDefault();
+                }
+            });
+        };
+    })
     // https://medium.com/swlh/improving-angular-performance-with-1-line-of-code-a1fb814a6476#.5l06m0phb
     // .config(['$compileProvider', function ($compileProvider) {
     //     $compileProvider.debugInfoEnabled(false);

@@ -22,61 +22,76 @@
                         <i class="material-icons">swap_vert</i>
                     </button>
                 </th>
+                <!--Columnn Header-->
                 <th class="mdl-data-table__cell--non-numeric"
                     ng-repeat="column in vm.table.columns"
                     ng-show="vm.isVisible(column)">
-                        <div style="display: flex;">
-                            <span>{{ column.header }}</span>
-                            <div>
-                                <button id="{{ 'column_action_' + column.key }}"
-                                        class="mdl-button mdl-js-button mdl-button--icon"
-                                        mdl-upgrade>
-                                    <i class="material-icons">keyboard_arrow_down</i>
-                                </button>
-
-                                <ul class="mdl-menu mdl-menu--bottom mdl-js-menu mdl-js-ripple-effect"
-                                    for="{{ 'column_action_' + column.key }}">
-                                    <li class="mdl-menu__item">
-                                        <div style="display: flex; flex-direction: row; justify-content:space-between;align-items: center; margin: 5px">
-                                            <span>filter</span>
-                                            <i class="material-icons" data-bind="command: toggleFilterVisible ">filter_list</i>
-                                        </div>
-                                    </li>
-                                    <li class="mdl-menu__item">
-                                        <div style="display: flex; flex-direction: row; justify-content:space-between;align-items: center; margin: 5px"
-                                             ng-click="vm.toggleVisibility(column)">
-                                            <span>hide</span>
-                                            <i class="material-icons" >visibility</i>
-                                        </div>
-                                    </li>
-                                    <li class="mdl-menu__item">
-                                        <div style="display: flex; flex-direction: row; justify-content:space-between;align-items: center; margin: 5px">
-                                            <i class="material-icons" data-bind=" command: { command: moveCmd, parameter: '-' }">chevron_left</i>
-                                            <span>move</span>
-                                            <i class="material-icons" data-bind=" command: { command: moveCmd, parameter: '+' }">chevron_right</i>
-                                        </div>
-                                    </li>
-                                    <li class="mdl-menu__item">
-                                        <div style="display: flex; flex-direction: row; justify-content:space-between;align-items: center; margin: 5px">
-                                            <i class="material-icons" data-bind="command: { command: setSortDirection, parameter: 'asc' }">keyboard_arrow_down</i>
-                                            <span> sort </span>
-                                            <i class="material-icons" data-bind="command: { command: setSortDirection, parameter: 'desc'}">keyboard_arrow_up</i>
-                                        </div>
-                                    </li>
-                                </ul>
+                        <div style="display: flex; flex-flow: column">
+                            <div style="display: flex;">
+                                <span>{{ column.header }}</span>
+                                <div>
+                                    <!--Coulmn Menu Drop Down-->
+                                    <button id="{{ 'column_action_' + column.key }}"
+                                            class="mdl-button mdl-js-button mdl-button--icon"
+                                            mdl-upgrade>
+                                        <i class="material-icons">keyboard_arrow_down</i>
+                                    </button>
+                                    <ul class="mdl-menu mdl-menu--bottom mdl-js-menu mdl-js-ripple-effect"
+                                        for="{{ 'column_action_' + column.key }}">
+                                        <!--Column Filter-->
+                                        <li class="mdl-menu__item" ng-click="vm.toggleVisibility(column.filter)">
+                                            <div style="display: flex; flex-direction: row; justify-content:space-between;align-items: center; margin: 5px">
+                                                <span>filter</span>
+                                                <i class="material-icons" >filter_list</i>
+                                            </div>
+                                        </li>
+                                        <!--Hide Column-->
+                                        <li class="mdl-menu__item">
+                                            <div style="display: flex; flex-direction: row; justify-content:space-between;align-items: center; margin: 5px"
+                                                 ng-click="vm.toggleVisibility(column)">
+                                                <span>hide</span>
+                                                <i class="material-icons" >visibility</i>
+                                            </div>
+                                        </li>
+                                        <!--OrderBy-->
+                                        <li class="mdl-menu__item">
+                                            <div style="display: flex; flex-direction: row; justify-content:space-between;align-items: center; margin: 5px">
+                                                <i class="material-icons" data-bind=" command: { command: moveCmd, parameter: '-' }">chevron_left</i>
+                                                <span>move</span>
+                                                <i class="material-icons" data-bind=" command: { command: moveCmd, parameter: '+' }">chevron_right</i>
+                                            </div>
+                                        </li>
+                                        <!--Move Column-->
+                                        <li class="mdl-menu__item" ng-click="vm.orderByColumnKey(column)">
+                                            <div style="display: flex; flex-direction: row; justify-content:space-between;align-items: center; margin: 5px">
+                                                <i class="material-icons" data-bind="command: { command: setSortDirection, parameter: 'asc' }">keyboard_arrow_down</i>
+                                                <span> sort </span>
+                                                <i class="material-icons" data-bind="command: { command: setSortDirection, parameter: 'desc'}">keyboard_arrow_up</i>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
+                            <!--Search Box-->
+                            <input type="text"
+                                   class="mdl-textfield__input"
+                                   ng-show="vm.isVisible(column.filter)"
+                                   ng-model="column.filter.value"
+                                   on-enter="vm.filterBy(column)"/>
                         </div>
                 </th>
             </tr>
         </thead>
         <tbody >
-        <tr ng-repeat="row in vm.table.elements">
+        <!--ROWS-->
+        <tr ng-repeat="row in vm.table.elements | orderBy:vm.table.orderBy:vm.table.reverseOrder" ng-if="vm.isVisible(row)">
             <td class="mdl-data-table__cell--non-numeric">
                 <button class="mdl-button mdl-js-button mdl-button--icon"
                         ng-click="vm.toggleSelected(row)">
                     <i class="material-icons">{{ row.isSelected? 'checked' : 'crop_square'}}</i>
                 </button>
             </td>
+            <!--CELLS-->
             <td class="mdl-data-table__cell--non-numeric"
                 ng-repeat="cell in row.elements"
                 ng-show="vm.isVisible(cell)">

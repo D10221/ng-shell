@@ -1,7 +1,10 @@
 
 import {EventArgs} from "../../infrastructure/interfaces";
 import {Guid} from "../../infrastructure/Guid";
-import {DataSource, iTable, iColumn, iRow, iCell, TableElement, TableElementRole, Visibility} from "./definitions";
+import {
+    DataSource, iTable, iColumn, iRow, iCell, TableElement, TableElementRole, Visibility,
+    Filter
+} from "./definitions";
 
 
 export class TnxTableCtrl {
@@ -80,7 +83,11 @@ export class TnxTableCtrl {
                 elements : [],
                 isSelected: false,
                 visibility: Visibility.visible,
-                role: TableElementRole.column
+                role: TableElementRole.column,
+                filter:{
+                    visibility: Visibility.hidden,
+                    value: ""
+                }
             })
         }
         
@@ -188,13 +195,47 @@ export class TnxTableCtrl {
     }
 
     static toggleVisibilityInternal(e:TableElement) {
-        e.visibility = e.visibility == Visibility.visible
-            ? Visibility.hidden
-            : Visibility.visible;
+        if(e.visibility || e.visibility == 0 ){
+            e.visibility = e.visibility == Visibility.visible
+                ? Visibility.hidden
+                : Visibility.visible;
+        }
     }
 
-    isVisible(e:TableElement) : boolean {
+    isVisible(e:Filter) : boolean;
+    isVisible(e:TableElement) : boolean ;
+    isVisible(e:any) : boolean {
         return e.visibility == Visibility.visible;
+    }
+
+
+    filterBy(x){
+        var column = (x as iColumn);
+        var regex = new RegExp(column.filter.value);
+        
+        var isMatch =(cell:iCell) : boolean => {
+            var ok = cell && ! _.isUndefined(cell.value) && regex.test(cell.value.toString());
+            return ok;
+        };         
+        
+        if(column && column.filter ){
+            ((column.parent as iTable).elements as iRow[])
+                .forEach( row => {
+                    // it coul dalso be regex.test(row.source[column.key] ) 
+                    // but against source value not cell valeu , cell value coul've changed
+                    // Not commited yet
+                    var cell = _.find((row.elements as iCell[]), cell=> cell.key == column.key );
+                    row.visibility = isMatch(cell)? Visibility.visible : Visibility.hidden;
+                    
+                });
+        }
+    }
+
+    orderByColumnKey (column:iColumn ) {
+        var table = (column.parent as iTable);
+        table.reverseOrder = _.isUndefined(table.reverseOrder) ? false : table.reverseOrder;
+        table.reverseOrder = table.orderBy == column.key ? !table.reverseOrder : false;
+        table.orderBy = column.key;
     }
 
 }
