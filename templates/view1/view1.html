@@ -1,51 +1,26 @@
-<div ng-controller="View1Ctrl as vm" style="margin-top: 100px;margin-left: 100px">
-
-    <div class="mdl-cell mdl-cell--4-col  mdl-card mdl-shadow--2dp"  style="width: 100%">
-        <div class="mdl-card__title">
-            <h2 class="mdl-card__title-text" >{{vm.header}}</h2>
-        </div>
-        <div style="width: 80%">
-
-            <table class="mdl-data-table">
-                <thead>
-                <tr>
-                    <th>
-                        <button class="mdl-button mdl-js-button mdl-button--icon">
-                            <i class="material-icons" > swap_vert </i>
-                        </button>
-                    </th>
-                    <th  ng-repeat="column in vm.table.columns" >{{column.header}}</th>
-                </tr>
-                </thead>
-                <tbody >
-                <!--Row-->
-                <tr ng-repeat="row in vm.table.elements">
-                    <td>
-                        <!--Ibuilt Cells-->
-                        <button class="mdl-button mdl-js-button mdl-button--icon">
-                            <i class="material-icons" > checked </i>
-                        </button>
-                    </td>
-                    <!--CELL-->
-                    <td ng-repeat="cell in row.elements">
-                        {{cell.value}}
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="mdl-card__actions mdl-card--border">
-            <div data-bind="with: $parent.pages">
-                <!--Context: Pages-->
-                <!--<div data-bind="component: { name: 'pages', params: $data}"></div>-->
-            </div>
-        </div>
-        <div class="mdl-card__menu">
-            <div style="display: flex">
-                <!--<div data-bind="component: { name: 'table-columns-visibility' , params: $data }"></div>-->
-                <!--<div data-bind="component: { name: 'table-actions' , params: $data }"></div>-->
+<div class="mdl-tabs mdl-js-tabs" ng-controller="View1Ctrl as vm">
+    <div class="mdl-tabs__tab-bar">
+        <a href="#tab1" class="mdl-tabs__tab">Materials Tab</a>
+        <a href="#tab2" class="mdl-tabs__tab">Tab Two</a>
+        <a href="#tab3" class="mdl-tabs__tab">Tab Three</a>
+    </div>
+    <div class="mdl-tabs__panel is-active" id="tab1">
+        <div class="page-content">
+            <!-- Your content goes here -->
+            <div class="mdl-grid" style="padding-top: 50px">
+                <div class="mdl-cell mdl-cell--1-col"></div>
+                <div class="mdl-cell mdl-cell--10-col">
+                    <tnx-table source="vm"></tnx-table>
+                </div>
+                <div class="mdl-cell mdl-cell--1-col"></div>
             </div>
         </div>
     </div>
-
+    <div class="mdl-tabs__panel" id="tab2">
+        <p>Second tab's content.</p>
+    </div>
+    <div class="mdl-tabs__panel" id="tab3">
+        <p>Third tab's content.</p>
+    </div>
 </div>
+

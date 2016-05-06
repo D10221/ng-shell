@@ -11,11 +11,12 @@ module.exports = {
     devtool: 'source-map',
     module: {
         loaders: [
-            {test: /\.css$/, loader: "style!css"},
-            {test: /\.tsx?$/, loader: "ts-loader"}
+            { test: /\.css$/, loader: "style!css" },
+            { test: /\.tsx?$/, loader: "ts-loader" }
         ]
     },
-    ts: {
+    ts:{
         configFileName: './tsconfig.json'
     }
 };
+

@@ -1,110 +1,39 @@
 'use strict';
-import {Guid} from "../infrastructure/Guid";
-
-interface TableElement {
-    id:Guid;
-    key:string;
-    isSelected:boolean;
-    elements:TableElement[];
-    parent:TableElement;
-}
-
-interface Table extends TableElement {
-    columns:Column[];
-
-}
-
-interface Column extends TableElement {
-    header:any ;
-}
-
-interface Cell extends TableElement {
-    value:any;
-}
-
-interface Row extends TableElement {
-
-}
+import {EventArgs} from "../infrastructure/interfaces";
 
 class View1Ctrl {
 
-    constructor($scope) {
+        
+    eBus = new Rx.Subject<EventArgs>();
+    
+    data: any ; 
+    
+    constructor($scope, $timeout: ng.ITimeoutService) {
 
-        fetch('data/materials.json')
+        this.eBus.asObservable()
+            .where(e=> e.sender != this)
+            .where(e=> e.args.key == "loaded")
+            .take(1)
+            .subscribe( x => {
+                this.eBus.onNext({ sender: this,  args: { key : 'data', value: this.data }});
+            });
+        
+        fetch('data/stock.json')
             .then(r=>r.json())
             .then(data=> {
-                this.data = data;
-                this.onDataLoaded(data);
-                this.loaded = true;
-                $scope.$apply();
+                
+                this.data = {
+                    key: "Stock",
+                    items: data
+                };
+                this.eBus.onNext({ sender: this,  args: { key : 'data', value: this.data }});
             });
+        
+        // $timeout(()=>{
+        //     this.eBus.onNext({ sender: this,  args: { key : 'data', value: this.data }});
+        // }, 500);
     }
-
-    header = 'Table';
-
-    data:any[] = [];
-
-    static $inject = ['$scope']; // , '$element'
-
-    loaded = false;
-
-    table: Table ;
-
-    onDataLoaded(data:any[]) {
-
-        var table:Table = {
-            id: Guid.newGuid(),
-            key: 'table',
-            isSelected: false,
-            elements: [],
-            parent: null, 
-            columns: []
-        };
-
-        var first = _.first(data);
-
-        for (var key in first) {
-
-            table.columns.push({
-                id: Guid.newGuid(),
-                key: key,
-                header: key,
-                isSelected: false,
-                elements: [],
-                parent: table
-            });
-        }
-
-        var toCell = (row:Row, col:Column, x:{}):Cell => {
-            return {
-                id: Guid.newGuid(),
-                key: col.key,
-                value: x[col.key],
-                isSelected: false,
-                elements: [],
-                parent: row
-            }
-        };
-
-        var toRow = (table:Table, x:{})=> {
-
-            var row = {
-                id: Guid.newGuid(),
-                key: '',
-                elements: [],
-                isSelected: false,
-                parent: table
-            };
-
-            var cells = table.columns.map(col=> toCell(row, col, x));
-
-            row.elements = cells;
-            return row;
-        };
-
-        table.elements = data.map(x=> toRow(table, x));
-        this.table = table;
-    }
+    
 }
 
 angular.module('ngShell.view1', ['ngRoute'])

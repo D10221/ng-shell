@@ -1,12 +1,13 @@
-import {SideNavSvc} from "./SideNavSvc";
+import {SideNav} from "./SideNav";
 
 export class NgShellRoot {
 
-    static $inject = ['SideNavSvc'];
-
-    brand = 'Tiny-x';
-
-    constructor(public  sideNav:SideNavSvc) {
-
+    brand = 'Tini-X';
+    
+    constructor($scope,public sideNav:SideNav) {
+        fetch('data/app_settings.json').then(r=>r.json()).then(data=> {
+            this.brand = data.brand;
+            $scope.$apply();
+        })
     }
 }

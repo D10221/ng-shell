@@ -15,13 +15,10 @@
     "karma-jasmine": "^0.3.5",
     "karma-junit-reporter": "^0.2.2",
     "protractor": "^2.1.0",
-    "shelljs": "^0.2.6",
-    "ts-loader": "^0.8.2",
-    "typescript": "^1.8.10",
-    "webpack": "^1.13.0"
+    "shelljs": "^0.2.6"
   },
   "scripts": {
-    "postinstall": "echo #tsd install ? ",
+    "postinstall": "tsd install",
     "prestart": "npm install",
     "start": "http-server -a localhost -p 8000 -c-1",
     "pretest": "npm install",
@@ -33,10 +30,10 @@
     "protractor": "protractor e2e-tests/protractor.conf.js",
     "update-index-async": "node -e \"require('shelljs/global'); sed('-i', /\\/\\/@@NG_LOADER_START@@[\\s\\S]*\\/\\/@@NG_LOADER_END@@/, '//@@NG_LOADER_START@@\\n' + sed(/sourceMappingURL=angular-loader.min.js.map/,'sourceMappingURL=bower_components/angular-loader/angular-loader.min.js.map','app/bower_components/angular-loader/angular-loader.min.js') + '\\n//@@NG_LOADER_END@@', 'app/index-async.html');\"",
     "build-ts": "tsc",
-    "clean": "rm built -rf",
-    "build-re-build-ts": "npm run clean && npm run build",
+    "build-clean": "rm built -rf",
+    "built-ts-rebuild": "npm run build-clean && npm run build-ts",
     "build-webpack": "webpack",
-    "build-webpack-rebuild": "npm run clean && webpack"
+    "build-webpack-rebuild": "npm run build-clean && webpack"
   },
   "dependencies": {
     "angular": "^1.5.5",
@@ -45,7 +42,8 @@
     "angular-material": "^1.0.8",
     "angular-route": "^1.5.5",
     "material-design-lite-oob": "git+https://git@github.com/D10221/material-design-lite-oob.git",
-    "lodash": "^4.11.1",
-    "whatwg-fetch": "^0.11.0"
+    "whatwg-fetch": "^0.11.0",
+    "lodash": "^4.11.1"
   }
 }
+

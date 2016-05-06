@@ -1,10 +1,7 @@
-
-declare interface  ComponentHandler {
+interface ComponentHandler {
     upgradeAllRegistered();
-    upgradeElement(e:any);
     upgradeElements(x:any);
+    upgradeDom();
 }
 
-declare var componentHandler : ComponentHandler ; 
-
-    
+declare var componentHandler :  ComponentHandler ;
