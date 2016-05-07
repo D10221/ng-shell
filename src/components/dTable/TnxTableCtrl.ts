@@ -5,29 +5,33 @@ import {
     DataSource, iTable, iColumn, iRow, iCell, TableElement, TableElementRole, Visibility,
     Filter
 } from "./definitions";
+import {layouts} from "./Layout";
 
 
-export class TnxTableCtrl {
+export class TnxTableCtrl implements Rx.Disposable {
     
     data: DataSource; 
     
     table: iTable ;
     
     noData () :boolean { return !this.table || _.isEmpty( this.table.elements) }
-    
+
+    disposables = new Rx.CompositeDisposable();
+
     constructor(private $scope) {
         
         var vm = $scope.source;
 
         var eBus = (vm.eBus as Rx.Subject<EventArgs>);
         
-        eBus.asObservable()
-            .where(e=>e.sender!=this)
-            .where(e=>e.args.key=='data')
-            .subscribe(e=>{
-                this.data = e.args.value  as DataSource;
-                this.table  = this.toTable(this.data);
-            });
+        this.disposables.add(
+            eBus.asObservable()
+                .where(e=>e.sender!=this)
+                .where(e=>e.args.key=='data')
+                .subscribe(e=>{
+                    this.rebuild(e);
+                })
+        );
 
         eBus.onNext( {
             sender: this, 
@@ -35,7 +39,37 @@ export class TnxTableCtrl {
                 key: 'loaded',
                 value: true 
             }});
+        
+        this.request = (key)=> {
+
+            switch (key) {
+                case 'reload':
+                    eBus.onNext( {sender: this, args: { key: 'reload', value : true }});
+                    break;
+            }
+        };
+        
+        // var watcherDispose = $scope.$watchCollection('table.columns', (newValue, oldValue, scope )=> {
+        //     console.log('changed');
+        // });
+
+        $scope.$on('$destroy', function () {
+            console.log('disposing');
+            // watcherDispose();
+             this.dispose();
+        });
     }
+
+    rebuild: (e:EventArgs) => void = (e) => {
+        this.data = e.args.value  as DataSource;
+        this.table = this.toTable(this.data);
+    };
+
+    dispose(){
+        this.disposables.dispose();
+    }
+    
+    request(key: string): void {};
 
     toTable(data: DataSource ) : iTable {
         
@@ -73,22 +107,28 @@ export class TnxTableCtrl {
         var first = _.first(table.source);
         
         var i = 0 ; 
+        
         for(var key in first ){
+            
+            var layout = layouts.getColumn(table.key, key);
+            
             columns.push( {
-                index: i++,
+                index: layout ? layout.index : i,
                 key: key ,
                 header: key,
                 id: Guid.newGuid(),
                 parent: table,
                 elements : [],
                 isSelected: false,
-                visibility: Visibility.visible,
+                visibility: layout? layout.visibility : Visibility.visible,
                 role: TableElementRole.column,
-                filter:{
+                filter: {
                     visibility: Visibility.hidden,
                     value: ""
                 }
-            })
+            });
+            
+            i++;
         }
         
         return columns;
@@ -189,9 +229,11 @@ export class TnxTableCtrl {
                     )
                 }
             );
+            
+            layouts.save(table);
         }
-
-
+        
+        
     }
 
     static toggleVisibilityInternal(e:TableElement) {
@@ -221,8 +263,8 @@ export class TnxTableCtrl {
         if(column && column.filter ){
             ((column.parent as iTable).elements as iRow[])
                 .forEach( row => {
-                    // it coul dalso be regex.test(row.source[column.key] ) 
-                    // but against source value not cell valeu , cell value coul've changed
+                    // it could also be ...regex.test(row.source[column.key] ) 
+                    // but against source value not cell value , cell value could've been changed
                     // Not commited yet
                     var cell = _.find((row.elements as iCell[]), cell=> cell.key == column.key );
                     row.visibility = isMatch(cell)? Visibility.visible : Visibility.hidden;

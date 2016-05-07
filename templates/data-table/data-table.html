@@ -30,7 +30,7 @@
                             <div style="display: flex;">
                                 <span>{{ column.header }}</span>
                                 <div>
-                                    <!--Coulmn Menu Drop Down-->
+                                    <!--Column Menu Drop Down-->
                                     <button id="{{ 'column_action_' + column.key }}"
                                             class="mdl-button mdl-js-button mdl-button--icon"
                                             mdl-upgrade>
@@ -122,10 +122,12 @@
                        id="table-search-text-field">
             </div>
         </div>
-        <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
-            <!-- Right aligned menu below button -->
+        <!--Reload-->
+        <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect"
+                ng-click="vm.request('reload')">
             <i class="material-icons">autorenew</i>
         </button>
+        <!--Column Visibility Toggle-->
         <button id="{{ 'table_column_visibility_' + vm.table.key }}"
                 class="mdl-button mdl-b">
             <i class="material-icons" >visibility</i>
@@ -140,6 +142,8 @@
                 </div>
             </li>
         </ul>
+
+        <!--Table Actions -->
         <button id="{{ 'table_menu_' + vm.table.key }}"
                 class="mdl-button mdl-js-button mdl-button--icon">
             <i class="material-icons">more_vert</i>

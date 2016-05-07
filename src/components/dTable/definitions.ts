@@ -21,7 +21,7 @@ export interface TableElement {
 
 export interface  Filter {
     visibility: Visibility;
-    value: any;
+    value: string;
 }
 
 export interface iTable extends TableElement {
@@ -52,4 +52,13 @@ export interface iCell extends  TableElement {
 export interface DataSource {
     key: string;
     items: any[];
+}
+
+export interface TableElementLayout {
+    key: string ;
+    index: number,
+    visibility: Visibility,
+    //enabled: boolean,
+    selected: boolean,
+    elements : TableElementLayout[]
 }

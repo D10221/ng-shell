@@ -17,6 +17,14 @@ class View1Ctrl {
             .subscribe( x => {
                 this.eBus.onNext({ sender: this,  args: { key : 'data', value: this.data }});
             });
+
+        this.eBus.asObservable()
+            .where(e=>e.sender!=this)
+            .where(e=> e.args.key == 'reload')
+            .subscribe(()=>{
+                //this.data.key += '.';
+                this.eBus.onNext({ sender: this,  args: { key : 'data', value: this.data }});
+            });
         
         fetch('data/stock.json')
             .then(r=>r.json())
