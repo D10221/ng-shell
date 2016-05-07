@@ -53,10 +53,10 @@ export class TnxTableCtrl implements Rx.Disposable {
         //     console.log('changed');
         // });
 
-        $scope.$on('$destroy', function () {
-            console.log('disposing');
+        $scope.$on('$destroy', () => {
+            console.log('Table Ctrl disposing');
             // watcherDispose();
-             this.dispose();
+            this.dispose();
         });
     }
 
@@ -65,9 +65,11 @@ export class TnxTableCtrl implements Rx.Disposable {
         this.table = this.toTable(this.data);
     };
 
-    dispose(){
-        this.disposables.dispose();
-    }
+    dispose: ()=> void = ()=> {
+        if(this.disposables){
+            this.disposables.dispose();
+        }
+    };
     
     request(key: string): void {};
 

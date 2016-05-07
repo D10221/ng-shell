@@ -7,7 +7,9 @@ export class SideNav {
 
     navItems:any[];
 
-    constructor() {
+    home = '#/';
+
+    constructor(private $location) {
 
         this.navItems = [
             {
@@ -21,5 +23,9 @@ export class SideNav {
                 label: 'view 2'
             }
         ];
+    }
+    
+    go(path){
+        this.$location.path(path);
     }
 }

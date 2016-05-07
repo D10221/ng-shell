@@ -1,30 +1,33 @@
 'use strict';
 import {EventArgs} from "../infrastructure/interfaces";
 
-class View1Ctrl {
-
-        
+class View1Ctrl implements Rx.Disposable {
+     
     eBus = new Rx.Subject<EventArgs>();
     
     data: any ; 
+    
+    disposables = new Rx.CompositeDisposable();
     
     constructor($scope, $timeout: ng.ITimeoutService) {
 
         this.eBus.asObservable()
             .where(e=> e.sender != this)
             .where(e=> e.args.key == "loaded")
-            .take(1)
+            .take(1) // No Need to Dispose 
             .subscribe( x => {
                 this.eBus.onNext({ sender: this,  args: { key : 'data', value: this.data }});
             });
 
-        this.eBus.asObservable()
-            .where(e=>e.sender!=this)
-            .where(e=> e.args.key == 'reload')
-            .subscribe(()=>{
-                //this.data.key += '.';
-                this.eBus.onNext({ sender: this,  args: { key : 'data', value: this.data }});
-            });
+        this.disposables.add(
+            this.eBus.asObservable()
+                .where(e=>e.sender!=this)
+                .where(e=> e.args.key == 'reload')
+                .subscribe(()=>{
+                    //this.data.key += '.';
+                    this.eBus.onNext({ sender: this,  args: { key : 'data', value: this.data }});
+                })
+        );
         
         fetch('data/stock.json')
             .then(r=>r.json())
@@ -40,8 +43,17 @@ class View1Ctrl {
         // $timeout(()=>{
         //     this.eBus.onNext({ sender: this,  args: { key : 'data', value: this.data }});
         // }, 500);
+
+        $scope.$on('$destroy', () => {
+            console.log('View1Ctrl disposing');
+            // watcherDispose();
+            this.dispose();
+        });
     }
     
+    dispose : ()=> void = ()=> {
+      this.disposables.dispose();  
+    };
 }
 
 angular.module('ngShell.view1', ['ngRoute'])
