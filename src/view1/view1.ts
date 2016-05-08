@@ -35,8 +35,15 @@ class View1Ctrl implements Rx.Disposable {
                 
                 this.data = {
                     key: "Stock",
-                    items: data
+                    items: data,
+                    columns: [
+                        {
+                            key: 'Description_1',
+                            header: 'Description'
+                        }
+                    ]
                 };
+                
                 this.eBus.onNext({ sender: this,  args: { key : 'data', value: this.data }});
             });
         

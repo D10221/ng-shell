@@ -1,34 +1,37 @@
-module.exports = function(config){
-  config.set({
+module.exports = function (config) {
+    config.set({
 
-    basePath : './',
+        basePath: './',
 
-    files : [
-      'node_modules/angular/angular.js',
-      'node_modules/angular-route/angular-route.js',
-      'node_modules/angular-mocks/angular-mocks.js',
-      'built/components/**/*.js',
-      'built/view*/**/*.js',
-       'test/**/*_test.js' 
-    ],
+        files: [
+            "node_modules/material-design-lite-oob/res/material.min.js",
+            "node_modules/whatwg-fetch/fetch.js",
+            "node_modules/lodash/lodash.js",
+            "node_modules/rx/dist/rx.all.js",
+            'node_modules/angular/angular.js',
+            'node_modules/angular-route/angular-route.js',
+            'node_modules/angular-mocks/angular-mocks.js',
+            'built/bundle.js',
+            'test/**/*_test.js'
+        ],
 
-    autoWatch : true,
+        autoWatch: true,
 
-    frameworks: ['jasmine'],
+        frameworks: ['jasmine'],
 
-    browsers : ['Chrome'],
+        browsers: ['Chrome'],
 
-    plugins : [
+        plugins: [
             'karma-chrome-launcher',
             'karma-firefox-launcher',
             'karma-jasmine',
             'karma-junit-reporter'
-            ],
+        ],
 
-    junitReporter : {
-      outputFile: 'test_out/unit.xml',
-      suite: 'unit'
-    }
+        junitReporter: {
+            outputFile: 'test_out/unit.xml',
+            suite: 'unit'
+        }
 
-  });
+    });
 };

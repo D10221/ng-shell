@@ -17,6 +17,7 @@ export interface TableElement {
     visibility: Visibility;
     index: number;
     role: TableElementRole ;
+    isEditing: boolean;
 }
 
 export interface  Filter {
@@ -52,6 +53,7 @@ export interface iCell extends  TableElement {
 export interface DataSource {
     key: string;
     items: any[];
+    columns?: ColumnDefinition[];
 }
 
 export interface TableElementLayout {
@@ -61,4 +63,16 @@ export interface TableElementLayout {
     //enabled: boolean,
     selected: boolean,
     elements : TableElementLayout[]
+}
+
+export interface ColumnDefinition {
+    key: string;
+    index?:number;
+    header?:any;
+    getter?:(item:{}) => any;
+    disabledFeatures?:string[];
+    visibility?: Visibility;
+    //configureCell?:(cell) => void;
+    //commandAction?:(col:Column ,  parameter: any) => void;
+    //inputType?: string;
 }

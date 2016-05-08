@@ -1,29 +1,89 @@
 
-import {TableElement, TableElementLayout} from "./definitions";
+import {TableElement, TableElementLayout, TableElementRole, iTable} from "./definitions";
 
 
-class Layouts {
+export class Layouts {
+    
+    constructor(private prefix?: string) {
+        this.prefix = this.prefix || 'tnx';
+    }
+    
+    store : Storage = localStorage;
 
-    restore(table:TableElement) {
-        var x = localStorage.getItem(`tnx_table_${table.key}`);
+    static roleName(e:TableElement) : string {
+        
+        if(e.role == TableElementRole.table) {
+            return 'table';
+        } 
+        
+        if(e.role == TableElementRole.column) {
+            return 'column';
+        }
+        
+        if(e.role == TableElementRole.row) {
+            return 'row';
+        }
+        
+        if(e.role == TableElementRole.cell) {
+            return 'cell';
+        }
+        
+        throw 'role not found';
+    }
+    
+    elementKey(e:TableElement): string {
+        
+        if(e.role == TableElementRole.table){
+            return `${this.prefix}_${Layouts.roleName(e)}_${e.key}`;
+        }
+        if(e.role == TableElementRole.column){
+            return `${this.prefix}_table_${e.parent.key}_${Layouts.roleName(e)}_${e.key}`;
+        }
+        if(e.role == TableElementRole.row){
+            return `${this.prefix}_table_${e.parent.key}_${Layouts.roleName(e)}_${e.key}`;
+        }
+        if(e.role == TableElementRole.cell){
+            return `${this.prefix}_table_${e.parent.parent.key}_row_${e.parent.key}_${Layouts.roleName(e)}_${e.key}`;
+        }
+        
+    }
+    
+    getLayout(e:TableElement) : TableElementLayout {
+        return JSON.parse(this.store.getItem(layouts.elementKey(e)));
+    }
+    
+    restore(e:TableElement) {
+        var x = this.getLayout(e);
         if(x){
-            return Layouts.setLayout(table, x);
+            return Layouts.applyLayout(e, x);
         }
     }
 
-    save(table:TableElement){
-        var layout = Layouts.getLayout(table);
-        localStorage.setItem(`tnx_table_${table.key}`, JSON.stringify(layout));
+    save: (e:TableElement) => void = (e)=> {
+
+        // if(e.role == TableElementRole.column) {
+        //
+        //     var table = e.parent as iTable;
+        //
+        //     table.columns.forEach(c=>{
+        //         layouts.save(c)
+        //     });
+        //
+        //     layouts.save(table);
+        // }
+        
+        var layout = Layouts.toLayout(e);
+        this.store.setItem(layouts.elementKey(e), JSON.stringify(layout));
+    };
+
+    drop(e: TableElement){
+        if(e.role == TableElementRole.table){
+            (e as iTable).columns.forEach(this.drop);
+        }
+        this.store.removeItem(this.elementKey(e));
     }
 
-    drop(table: TableElement){
-        localStorage.removeItem(`tnx_table_${table.key}`);
-    }
-
-    getTable(key:string) : TableElementLayout  {
-        return this.fromJson(localStorage.getItem(`tnx_table_${key}`));
-    }
-
+    
     fromJson(json:string) : TableElementLayout {
 
         var element = JSON.parse(json);
@@ -31,31 +91,24 @@ class Layouts {
         // element.elements = element.elements.map(e=> this.fromJson(e));
         return element
     }
-
-    getColumn : (dataSourceKey:string, columnKey : string) => any = (dataSourceKey,columnKey) => {
-
-        var table = this.getTable(dataSourceKey);
-        if(!table || ! table.elements) return null;
-
-        var found = _.find(table.elements, row =>  _.some(row.elements, cell=> cell.key == columnKey) != null );
-        return found ?
-            _.find(found.elements, x=>x.key == columnKey )
-            : null ;
-    };
-
-    static getLayout(e:TableElement):TableElementLayout {
+    
+    static toLayout(e:TableElement):TableElementLayout {
         
         return {
             key: e.key,
             index: e.index,
             visibility: e.visibility,
-           // enabled: e.enabled,
+            // enabled: e.enabled,
             selected: e.isSelected,
-            elements : e.elements.map(x=> Layouts.getLayout(x))
+            elements : _.chain(e.elements)
+                //not serializing cells
+                .filter(e=>e.role != TableElementRole.cell)
+                .map(x=> Layouts.toLayout(x))
+                .value()
         };
     }
 
-    static setLayout(e:TableElement,layout: TableElementLayout) {
+    static applyLayout(e:TableElement, layout: TableElementLayout) {
 
         if(!layout) {
             return ;
@@ -67,7 +120,7 @@ class Layouts {
         //e.enabled(layout.enabled);
         e.isSelected = layout.selected;
         for(var element of e.elements){
-            Layouts.setLayout(element, _.find(layout.elements, l=>l.key == element.key));
+            Layouts.applyLayout(element, _.find(layout.elements, l=>l.key == element.key));
         }
     }
 }

@@ -33,7 +33,10 @@
     "build-clean": "rm built -rf",
     "built-ts-rebuild": "npm run build-clean && npm run build-ts",
     "build-webpack": "webpack",
-    "build-webpack-rebuild": "npm run build-clean && webpack"
+    "build-webpack-rebuild": "npm run build-clean && webpack",
+    "build-test" : "webpack --config test/webpack.config.js ",
+    "build-test-clean" : "rm test/bundled_test.* -f && webpack --config test/webpack.config.js ",
+    "build-source-and-test" : "npm run build-webpack && npm run build-test"
   },
   "dependencies": {
     "angular": "^1.5.5",

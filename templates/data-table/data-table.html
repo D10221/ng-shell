@@ -3,13 +3,16 @@
         text-decoration: line-through;
 
     }
+    .cell-dirty {
+        background: orange;
+    }
 </style>
 <div class="mdl-card mdl-shadow--2dp"
      style="width: 100%;max-height: 650px"
      ng-controller="TnxTableCtrl as vm">
     <div class="mdl-card__title" style="margin-top: 32px">
         <h2 class="mdl-card__title-text">
-            {{ vm.table.header || 'NotFound' }}
+            {{ (vm.table.header || 'NotFound') + ' (' + (vm.table.elements.length || 0 ) + ')'}}
         </h2>
     </div>
     <table class="mdl-data-table mdl-js-data-table"
@@ -94,8 +97,12 @@
             <!--CELLS-->
             <td class="mdl-data-table__cell--non-numeric"
                 ng-repeat="cell in row.elements"
-                ng-show="vm.isVisible(cell)">
-                {{cell.value}}
+                ng-show="vm.isVisible(cell)"
+                ng-click="vm.toggleEditing(cell)"
+                ng-class="cell.isDirty ? 'cell-dirty' : ''"
+                >
+                <span ng-hide="cell.isEditing" >{{ cell.value }}</span>
+                <input ng-show="cell.isEditing" ng-model="cell.value" ng-blur="vm.toggleEditing(cell, false)"/>
             </td>
         </tr>
         </tbody>
@@ -154,7 +161,7 @@
             <li class="mdl-menu__item">Some Action</li>
             <li class="mdl-menu__item">Another Action</li>
             <li disabled class="mdl-menu__item">Disabled Action</li>
-            <li class="mdl-menu__item">Yet Another Action</li>
+            <li class="mdl-menu__item" ng-click="vm.dropLayout(vm.table)">Drop Layout</li>
         </ul>
     </div>
 </div>

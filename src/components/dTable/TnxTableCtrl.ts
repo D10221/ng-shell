@@ -3,9 +3,10 @@ import {EventArgs} from "../../infrastructure/interfaces";
 import {Guid} from "../../infrastructure/Guid";
 import {
     DataSource, iTable, iColumn, iRow, iCell, TableElement, TableElementRole, Visibility,
-    Filter
+    Filter, ColumnDefinition
 } from "./definitions";
 import {layouts} from "./Layout";
+import {Cell} from "./Cell";
 
 
 export class TnxTableCtrl implements Rx.Disposable {
@@ -60,8 +61,8 @@ export class TnxTableCtrl implements Rx.Disposable {
         });
     }
 
-    rebuild: (e:EventArgs) => void = (e) => {
-        this.data = e.args.value  as DataSource;
+    rebuild: (e?:EventArgs) => void = (e) => {
+        this.data = e? e.args.value  as DataSource: this.data;
         this.table = this.toTable(this.data);
     };
 
@@ -90,19 +91,20 @@ export class TnxTableCtrl implements Rx.Disposable {
             visibility: Visibility.visible,
             columns: [],
             source: data.items,
-            role: TableElementRole.table
+            role: TableElementRole.table,
+            isEditing: false
         };
         
         table.columns = this
-            .makeColumns(table);     
+            .makeColumns(table, data.columns);     
         
         table.elements = this
             .makeRows(table);
-        
+
         return table;
     }
     
-    makeColumns(table:iTable): iColumn[] {
+    makeColumns(table:iTable, definitions: ColumnDefinition[]): iColumn[] {
         
         var columns = [] ;
 
@@ -111,30 +113,47 @@ export class TnxTableCtrl implements Rx.Disposable {
         var i = 0 ; 
         
         for(var key in first ){
-            
-            var layout = layouts.getColumn(table.key, key);
-            
-            columns.push( {
-                index: layout ? layout.index : i,
+                         
+            var definition = _.find(definitions, d => d.key == key );
+
+            var column = {
+                index:  i,
                 key: key ,
-                header: key,
+                header: definition ? definition.header : key,
                 id: Guid.newGuid(),
                 parent: table,
                 elements : [],
                 isSelected: false,
-                visibility: layout? layout.visibility : Visibility.visible,
+                visibility: this.ifDefined(
+                    definition,
+                    'visibility',
+                    d=> definition.visibility ,
+                    Visibility.visible
+                ),
                 role: TableElementRole.column,
                 filter: {
                     visibility: Visibility.hidden,
                     value: ""
-                }
-            });
+                },
+                isEditing: false
+            };
+
+            layouts.restore(column);
+
+            columns.push( column);
             
             i++;
         }
         
-        return columns;
+        return _.orderBy(columns, c => c.index );
     }
+
+    ifDefined<T,TR>(x:T , key:string, value : (t:T) => TR , defaultValue?: TR) : TR {
+        if(x !=null  && x.hasOwnProperty(key)){
+            return value(x)
+        }
+        return defaultValue /*?? null*/ ;
+    };
     
     makeRows(table:iTable){
         
@@ -153,7 +172,8 @@ export class TnxTableCtrl implements Rx.Disposable {
                 elements: [] ,
                 isSelected: false,
                 visibility: Visibility.visible,
-                role: TableElementRole.row
+                role: TableElementRole.row,
+                isEditing: false
             };
             
             row.elements = this.makeCell(row);
@@ -169,7 +189,7 @@ export class TnxTableCtrl implements Rx.Disposable {
         var cells : iCell[] = [];
         
         for(var column of (row.parent as iTable).columns){
-            // 
+            
             cells.push( {
                 index : column.index,
                 id:Guid.newGuid(),
@@ -178,12 +198,14 @@ export class TnxTableCtrl implements Rx.Disposable {
                 parent: row,
                 elements: [],
                 isSelected: false,
-                visibility: Visibility.visible,
-                role: TableElementRole.cell
+                visibility: column.visibility,
+                role: TableElementRole.cell,
+                isEditing: false
             });
+            //cells.push(new Cell(row, column))
         }
         
-        return cells;
+        return _.orderBy(cells, cell=>cell.index);
     }
 
     toggleSelected(e:TableElement[]):void;
@@ -212,29 +234,7 @@ export class TnxTableCtrl implements Rx.Disposable {
     toggleVisibility(e: TableElement){
 
         TnxTableCtrl.toggleVisibilityInternal(e);
-
-        if(e.role == TableElementRole.column) {
-            
-            var table = e.parent as iTable;
-            
-            (table.elements as iRow[]).forEach(
-                
-                row => {
-                    
-                    (row.elements as iCell[]).forEach(
-                        
-                        cell=> {
-                            if(cell.key == e.key){
-                                cell.visibility = e.visibility;
-                            }
-                        }
-                    )
-                }
-            );
-            
-            layouts.save(table);
-        }
-        
+        layouts.save(e);         
         
     }
 
@@ -281,5 +281,28 @@ export class TnxTableCtrl implements Rx.Disposable {
         table.reverseOrder = table.orderBy == column.key ? !table.reverseOrder : false;
         table.orderBy = column.key;
     }
+    
+    dropLayout(e:TableElement){
+        layouts.drop(e);
+        this.rebuild();
+    }
 
+    toggleEditing(x: TableElement, state?: boolean ){
+        
+        var editingOff = cell=> {
+            if(cell.id!= x.id){
+                cell.isEditing = false;
+            }
+        };
+        
+        var rowEditingOff = row=> (row.elements as iCell[]).forEach(editingOff); 
+        
+        if(x.role == TableElementRole.cell){
+            ((x.parent.parent as iTable).elements as iRow[]).forEach(rowEditingOff);
+        }
+        
+        x.isEditing = _.isUndefined(state) ? !x.isEditing : state == true;
+    }
 }
+
+

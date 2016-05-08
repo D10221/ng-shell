@@ -9,6 +9,6 @@ angular.module('tinyx.dTable', [])
                 source: '='
             },
             templateUrl: 'templates/data-table/data-table.html',
-            transclude: true
+           // transclude: true
         }
     });
