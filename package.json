@@ -34,9 +34,9 @@
     "built-ts-rebuild": "npm run build-clean && npm run build-ts",
     "build-webpack": "webpack",
     "build-webpack-rebuild": "npm run build-clean && webpack",
-    "build-test" : "webpack --config test/webpack.config.js ",
-    "build-test-clean" : "rm test/bundled_test.* -f && webpack --config test/webpack.config.js ",
-    "build-source-and-test" : "npm run build-webpack && npm run build-test"
+    "build-test": "webpack --config test/webpack.config.js ",
+    "build-test-clean": "rm test/bundled_test.* -f && webpack --config test/webpack.config.js ",
+    "build-source-and-test": "npm run build-webpack && npm run build-test"
   },
   "dependencies": {
     "angular": "^1.5.5",
@@ -46,6 +46,7 @@
     "angular-route": "^1.5.5",
     "lodash": "^4.11.1",
     "material-design-lite-oob": "git+https://git@github.com/D10221/material-design-lite-oob.git",
+    "moment": "^2.13.0",
     "rx": "^4.1.0",
     "whatwg-fetch": "^0.11.0"
   }

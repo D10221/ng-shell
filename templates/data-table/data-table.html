@@ -28,7 +28,7 @@
                 <!--Columnn Header-->
                 <th class="mdl-data-table__cell--non-numeric"
                     ng-repeat="column in vm.table.columns"
-                    ng-show="vm.isVisible(column)">
+                    ng-show="column | isVisible">
                         <div style="display: flex; flex-flow: column">
                             <div style="display: flex;">
                                 <span>{{ column.header }}</span>
@@ -56,20 +56,22 @@
                                                 <i class="material-icons" >visibility</i>
                                             </div>
                                         </li>
-                                        <!--OrderBy-->
+                                        <!--Move -->
                                         <li class="mdl-menu__item">
                                             <div style="display: flex; flex-direction: row; justify-content:space-between;align-items: center; margin: 5px">
-                                                <i class="material-icons" data-bind=" command: { command: moveCmd, parameter: '-' }">chevron_left</i>
+                                                <i class="material-icons"
+                                                   ng-click="vm.move(column, 'left')">chevron_left</i>
                                                 <span>move</span>
-                                                <i class="material-icons" data-bind=" command: { command: moveCmd, parameter: '+' }">chevron_right</i>
+                                                <i class="material-icons"
+                                                   ng-click="vm.move(column, 'right')">chevron_right</i>
                                             </div>
                                         </li>
-                                        <!--Move Column-->
+                                        <!--OrderBy-->
                                         <li class="mdl-menu__item" ng-click="vm.orderByColumnKey(column)">
                                             <div style="display: flex; flex-direction: row; justify-content:space-between;align-items: center; margin: 5px">
-                                                <i class="material-icons" data-bind="command: { command: setSortDirection, parameter: 'asc' }">keyboard_arrow_down</i>
+                                                <i class="material-icons" >keyboard_arrow_down</i>
                                                 <span> sort </span>
-                                                <i class="material-icons" data-bind="command: { command: setSortDirection, parameter: 'desc'}">keyboard_arrow_up</i>
+                                                <i class="material-icons" >keyboard_arrow_up</i>
                                             </div>
                                         </li>
                                     </ul>
@@ -78,7 +80,7 @@
                             <!--Search Box-->
                             <input type="text"
                                    class="mdl-textfield__input"
-                                   ng-show="vm.isVisible(column.filter)"
+                                   ng-show="column.filter | isVisible"
                                    ng-model="column.filter.value"
                                    on-enter="vm.filterBy(column)"/>
                         </div>
@@ -87,7 +89,7 @@
         </thead>
         <tbody >
         <!--ROWS-->
-        <tr ng-repeat="row in vm.table.elements | orderBy:vm.table.orderBy:vm.table.reverseOrder" ng-if="vm.isVisible(row)">
+        <tr ng-repeat="row in vm.table.elements | orderBy:vm.table.orderBy:vm.table.reverseOrder" ng-if="row | isVisible" >
             <td class="mdl-data-table__cell--non-numeric">
                 <button class="mdl-button mdl-js-button mdl-button--icon"
                         ng-click="vm.toggleSelected(row)">
@@ -97,12 +99,14 @@
             <!--CELLS-->
             <td class="mdl-data-table__cell--non-numeric"
                 ng-repeat="cell in row.elements"
-                ng-show="vm.isVisible(cell)"
-                ng-click="vm.toggleEditing(cell)"
+                ng-show="cell | isVisible"
                 ng-class="cell.isDirty ? 'cell-dirty' : ''"
                 >
-                <span ng-hide="cell.isEditing" >{{ cell.value }}</span>
-                <input ng-show="cell.isEditing" ng-model="cell.value" ng-blur="vm.toggleEditing(cell, false)"/>
+                <!--readonly-->
+                <span ng-hide="cell.isEditing"
+                      ng-click="vm.toggleEditing(cell)">{{ cell.value }}</span>
+                <!--edit-->
+                <input ng-if="cell.isEditing" ng-model="cell.value" ng-blur="vm.toggleEditing(cell, false)"/>
             </td>
         </tr>
         </tbody>

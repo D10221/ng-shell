@@ -43,6 +43,12 @@
     },
     "rx/rx-lite.d.ts": {
       "commit": "ea5859b23c4c533a8cf228cc8ae577cab264493c"
+    },
+    "moment/moment.d.ts": {
+      "commit": "6052959591c9bc6f8463c58220965c7030ba934d"
+    },
+    "moment/moment-node.d.ts": {
+      "commit": "6052959591c9bc6f8463c58220965c7030ba934d"
     }
   }
 }

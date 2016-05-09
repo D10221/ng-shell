@@ -1,13 +1,14 @@
 
 import {EventArgs} from "../../infrastructure/interfaces";
-import {Guid} from "../../infrastructure/Guid";
+
 import {
     DataSource, iTable, iColumn, iRow, iCell, TableElement, TableElementRole, Visibility,
     Filter, ColumnDefinition
 } from "./definitions";
-import {layouts} from "./Layout";
-import {Cell} from "./Cell";
 
+import {layouts} from "./Layout";
+
+import {isVisible}  from './TableElementTools';
 
 export class TnxTableCtrl implements Rx.Disposable {
     
@@ -19,7 +20,7 @@ export class TnxTableCtrl implements Rx.Disposable {
 
     disposables = new Rx.CompositeDisposable();
 
-    constructor(private $scope) {
+    constructor(private $scope,private $timeout) {
         
         var vm = $scope.source;
 
@@ -45,7 +46,7 @@ export class TnxTableCtrl implements Rx.Disposable {
 
             switch (key) {
                 case 'reload':
-                    eBus.onNext( {sender: this, args: { key: 'reload', value : true }});
+                    eBus.onNext( { sender: this, args: { key: 'reload', value : true } } );
                     break;
             }
         };
@@ -84,7 +85,7 @@ export class TnxTableCtrl implements Rx.Disposable {
             index:  0  , 
             key: data.key ,
             header: data.key,
-            id: Guid.newGuid(),
+            id: `table_${data.key}`,
             parent: null, 
             elements : [],
             isSelected: false,
@@ -120,7 +121,7 @@ export class TnxTableCtrl implements Rx.Disposable {
                 index:  i,
                 key: key ,
                 header: definition ? definition.header : key,
-                id: Guid.newGuid(),
+                id: `${table.id}_column_${key}` /*Guid.newGuid()*/,
                 parent: table,
                 elements : [],
                 isSelected: false,
@@ -166,8 +167,8 @@ export class TnxTableCtrl implements Rx.Disposable {
             var row : iRow = {
                 source: x,
                 index : index ,
-                key: `${table.key}_row_${index++}`,
-                id: Guid.newGuid(),
+                key: `table_${table.key}_row_${index++}`,
+                id: `table_${table.key}_row_${index++}`,//Guid.newGuid(),
                 parent: table,
                 elements: [] ,
                 isSelected: false,
@@ -192,7 +193,7 @@ export class TnxTableCtrl implements Rx.Disposable {
             
             cells.push( {
                 index : column.index,
-                id:Guid.newGuid(),
+                id: `${row.key}_cell_${column.key}`,//Guid.newGuid(),
                 key: column.key,
                 value: row.source[column.key],
                 parent: row,
@@ -202,6 +203,7 @@ export class TnxTableCtrl implements Rx.Disposable {
                 role: TableElementRole.cell,
                 isEditing: false
             });
+            // Class Based its slower , 
             //cells.push(new Cell(row, column))
         }
         
@@ -234,7 +236,7 @@ export class TnxTableCtrl implements Rx.Disposable {
     toggleVisibility(e: TableElement){
 
         TnxTableCtrl.toggleVisibilityInternal(e);
-        layouts.save(e);         
+        this.$timeout(()=> layouts.save(e));         
         
     }
 
@@ -284,7 +286,7 @@ export class TnxTableCtrl implements Rx.Disposable {
     
     dropLayout(e:TableElement){
         layouts.drop(e);
-        this.rebuild();
+        this.$timeout(this.rebuild());
     }
 
     toggleEditing(x: TableElement, state?: boolean ){
@@ -302,6 +304,29 @@ export class TnxTableCtrl implements Rx.Disposable {
         }
         
         x.isEditing = _.isUndefined(state) ? !x.isEditing : state == true;
+    }
+    
+    move(e:TableElement, direction: string){
+        
+        if(e.role == TableElementRole.column){
+            
+            var found = _.find( _.chain((e.parent as iTable).columns).filter(c=> isVisible(c)).orderBy(c=>c.index, direction == 'left' ? 'desc' : 'asc').value(), 
+                    column=> direction == 'left' 
+                        ? c=> c.index < e.index 
+                        : c=> c.index > e.index);
+            
+            if(found) {
+                var next  = found.index;                
+                found.index = e.index;
+                e.index = next;
+
+                layouts.save(found);
+                layouts.save(e);
+
+                this.rebuild();
+            }
+            
+        }
     }
 }
 

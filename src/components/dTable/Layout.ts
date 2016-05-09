@@ -76,12 +76,12 @@ export class Layouts {
         this.store.setItem(layouts.elementKey(e), JSON.stringify(layout));
     };
 
-    drop(e: TableElement){
+    drop :(e: TableElement)=> void = (e)=> {
         if(e.role == TableElementRole.table){
             (e as iTable).columns.forEach(this.drop);
         }
         this.store.removeItem(this.elementKey(e));
-    }
+    };
 
     
     fromJson(json:string) : TableElementLayout {

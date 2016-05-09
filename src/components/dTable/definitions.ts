@@ -9,7 +9,7 @@ export enum Visibility {
 }
 
 export interface TableElement {
-    id: Guid;
+    id: any /*Guid?*/;
     key: string;
     parent: TableElement ;
     elements: TableElement[];

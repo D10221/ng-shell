@@ -19,7 +19,6 @@ import {FakeStorage} from "../../support/FakeStorage";
 }*/
 
 
-
 describe('layouts', function () {
     
     it('works', function(){
@@ -59,7 +58,6 @@ describe('layouts', function () {
         
         expect(e.visibility).toEqual(Visibility.visible);
         
-                
         
     })
     

@@ -35,6 +35,21 @@ angular.module('ngShell', [
             });
         };
     })
+    // https://tech.small-improvements.com/2013/09/10/angularjs-performance-with-large-lists/
+    // .directive('postRenderDirective',
+    // ['$timeout', '$log',
+    //     function($timeout, $log) {
+    //         var ref = moment();
+    //         return function(scope, element, attrs) {
+    //             if (scope.$last){
+    //                 $timeout(function(){
+    //                     var end = moment();
+    //                     $log.debug(`## DOM rendering time: ${end.millisecond()- ref.millisecond()} ms`);
+    //                 });
+    //             }
+    //         };
+    //     }
+    // ])
     // https://medium.com/swlh/improving-angular-performance-with-1-line-of-code-a1fb814a6476#.5l06m0phb
     // .config(['$compileProvider', function ($compileProvider) {
     //     $compileProvider.debugInfoEnabled(false);
