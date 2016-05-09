@@ -5,19 +5,39 @@ export function isVisible(e: TableElement) :boolean{
 }
 
 export enum Direction {
-    left,right,up,down
+    //left,right,up,down
+    desc, asc
 }
 
 export function nextVisible(elements: TableElement[],source:TableElement, direction: Direction ) : TableElement {
     
-    var order = direction == Direction.left ? 'desc' : 'asc';
-
-    var collection = _.chain(elements).filter(c=> isVisible(c)).orderBy(c=>c.index, order ).value();
+    if(direction == Direction.desc) {
+        return findNextDesc(elements, source.index);
+    }
     
-    return _.find( collection,
-        column=> direction == Direction.left
-            ? c=> c.index < source.index
-            : c=> c.index > source.index);
+    if(direction == Direction.asc){
+        return findNextAsc(elements, source.index);
+    }
+    
+    return null;
+}
+
+export function findNextDesc(elements: TableElement[] ,n: number) {
+    var visible = _.chain(elements)
+        .filter(isVisible)
+        .orderBy(x=> x.index, 'desc')
+        .value();
+    
+    return _.find(visible, (x:TableElement) => x.index <  n);
+}
+
+export function findNextAsc(elements: TableElement[],n: number) {
+    var visible = _.chain(elements)
+        .filter(isVisible)
+        .orderBy(x=>x.index, 'asc')
+        .value();
+    
+    return _.find(visible, (x:TableElement)=>  x.index > n );
 }
 
 export function moveElement(
