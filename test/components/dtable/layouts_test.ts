@@ -36,7 +36,8 @@ describe('layouts', function () {
             visibility: Visibility.visible,
             index: 0 ,
             role: TableElementRole.table,
-            isEditing: false
+            isEditing: false,
+            isDirty: false
         };
 
         var elementKey = 'tnxTest_table_testKey';

@@ -23,7 +23,8 @@ describe('TableElementTools', ()=> {
                     visibility: Visibility.visible,
                     index: n,
                     role: TableElementRole.column,
-                    isEditing: false
+                    isEditing: false,
+                    isDirty: false
                 }
             });
 

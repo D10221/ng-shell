@@ -18,6 +18,7 @@ export interface TableElement {
     index: number;
     role: TableElementRole ;
     isEditing: boolean;
+    isDirty: boolean;
 }
 
 export interface  Filter {
@@ -40,6 +41,7 @@ export interface iTable extends TableElement {
 export interface iColumn extends TableElement {
     header: any;
     filter: Filter ;
+    definition?: ColumnDefinition
 }
 
 export interface iRow extends TableElement {
@@ -69,7 +71,8 @@ export interface ColumnDefinition {
     key: string;
     index?:number;
     header?:any;
-    getter?:(item:{}) => any;
+    getter?:(cell:iCell) => any;
+    setter:(cell:iCell , value:any) => void,
     disabledFeatures?:string[];
     visibility?: Visibility;
     //configureCell?:(cell) => void;

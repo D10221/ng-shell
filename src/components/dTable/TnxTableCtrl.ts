@@ -8,7 +8,8 @@ import {
 
 import {layouts} from "./Layout";
 
-import {isVisible}  from './TableElementTools';
+import {isVisible, moveElement, Direction}  from './TableElementTools';
+import {Cell} from "./Cell";
 
 export class TnxTableCtrl implements Rx.Disposable {
     
@@ -93,7 +94,8 @@ export class TnxTableCtrl implements Rx.Disposable {
             columns: [],
             source: data.items,
             role: TableElementRole.table,
-            isEditing: false
+            isEditing: false,
+            isDirty: false
         };
         
         table.columns = this
@@ -136,7 +138,9 @@ export class TnxTableCtrl implements Rx.Disposable {
                     visibility: Visibility.hidden,
                     value: ""
                 },
-                isEditing: false
+                isEditing: false,
+                isDirty: false,
+                definition: definition
             };
 
             layouts.restore(column);
@@ -174,7 +178,8 @@ export class TnxTableCtrl implements Rx.Disposable {
                 isSelected: false,
                 visibility: Visibility.visible,
                 role: TableElementRole.row,
-                isEditing: false
+                isEditing: false,
+                isDirty: false
             };
             
             row.elements = this.makeCell(row);
@@ -191,20 +196,20 @@ export class TnxTableCtrl implements Rx.Disposable {
         
         for(var column of (row.parent as iTable).columns){
             
-            cells.push( {
-                index : column.index,
-                id: `${row.key}_cell_${column.key}`,//Guid.newGuid(),
-                key: column.key,
-                value: row.source[column.key],
-                parent: row,
-                elements: [],
-                isSelected: false,
-                visibility: column.visibility,
-                role: TableElementRole.cell,
-                isEditing: false
-            });
+            // cells.push( {
+            //     index : column.index,
+            //     id: `${row.key}_cell_${column.key}`,//Guid.newGuid(),
+            //     key: column.key,
+            //     value: row.source[column.key],
+            //     parent: row,
+            //     elements: [],
+            //     isSelected: false,
+            //     visibility: column.visibility,
+            //     role: TableElementRole.cell,
+            //     isEditing: false
+            // });
             // Class Based its slower , 
-            //cells.push(new Cell(row, column))
+            cells.push(new Cell(row, column))
         }
         
         return _.orderBy(cells, cell=>cell.index);
@@ -309,23 +314,18 @@ export class TnxTableCtrl implements Rx.Disposable {
     move(e:TableElement, direction: string){
         
         if(e.role == TableElementRole.column){
-            
-            var found = _.find( _.chain((e.parent as iTable).columns).filter(c=> isVisible(c)).orderBy(c=>c.index, direction == 'left' ? 'desc' : 'asc').value(), 
-                    column=> direction == 'left' 
-                        ? c=> c.index < e.index 
-                        : c=> c.index > e.index);
-            
-            if(found) {
-                var next  = found.index;                
-                found.index = e.index;
-                e.index = next;
 
-                layouts.save(found);
-                layouts.save(e);
-
-                this.rebuild();
-            }
-            
+            moveElement(e.parent.elements, e, direction == 'asc' ? Direction.asc : Direction.desc  ,(source, dest )=> {
+                
+                this.$timeout(()=>{
+                    
+                    layouts.save(source);
+                    layouts.save(dest);
+                    this.rebuild();
+                })
+                 
+            });           
+                        
         }
     }
 }

@@ -6,6 +6,9 @@
     .cell-dirty {
         background: orange;
     }
+    .row-dirty {
+        background: pink;
+    }
 </style>
 <div class="mdl-card mdl-shadow--2dp"
      style="width: 100%;max-height: 650px"
@@ -60,10 +63,10 @@
                                         <li class="mdl-menu__item">
                                             <div style="display: flex; flex-direction: row; justify-content:space-between;align-items: center; margin: 5px">
                                                 <i class="material-icons"
-                                                   ng-click="vm.move(column, 'left')">chevron_left</i>
+                                                   ng-click="vm.move(column, 'desc')">chevron_left</i>
                                                 <span>move</span>
                                                 <i class="material-icons"
-                                                   ng-click="vm.move(column, 'right')">chevron_right</i>
+                                                   ng-click="vm.move(column, 'asc')">chevron_right</i>
                                             </div>
                                         </li>
                                         <!--OrderBy-->
@@ -89,7 +92,9 @@
         </thead>
         <tbody >
         <!--ROWS-->
-        <tr ng-repeat="row in vm.table.elements | orderBy:vm.table.orderBy:vm.table.reverseOrder" ng-if="row | isVisible" >
+        <tr ng-repeat="row in vm.table.elements | orderBy:vm.table.orderBy:vm.table.reverseOrder"
+            ng-if="row | isVisible"
+            ng-class="row.isDirty ? 'row-dirty' : '' ">
             <td class="mdl-data-table__cell--non-numeric">
                 <button class="mdl-button mdl-js-button mdl-button--icon"
                         ng-click="vm.toggleSelected(row)">
