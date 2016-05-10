@@ -13,4 +13,13 @@ angular.module('tinyx.dTable', [])
             templateUrl: 'templates/data-table/data-table.html',
            // transclude: true
         }
+    })
+    .directive('tnxPager', ()=>{
+        return {
+            scope: {
+                pager: '='
+            },
+            templateUrl: 'templates/data-table/pager.html',
+            //post
+        }
     });

@@ -1,0 +1,30 @@
+<!-- ng-controller="Pager "-->
+<div style="display: flex; flex-flow: row">
+
+    <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+        <!-- Right aligned menu below button -->
+        <i class="material-icons" ng-click="pager.prevPage(true)">fast_rewind</i>
+    </button>
+    <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+        <!-- Right aligned menu below button -->
+        <i class="material-icons" ng-click="pager.prevPage()">chevron_left</i>
+    </button>
+    <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect"
+            ng-repeat="pageNo in pager.pageBullets"
+            ng-class="pager.currentPage == pageNo ?  'mdl-button--accent' : ''"
+            ng-click="pager.nextPage(pageNo)"
+            >
+        {{pageNo}}
+    </button>
+
+    <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect"
+            ng-click="pager.nextPage()">
+        <!-- Right aligned menu below button -->
+        <i class="material-icons">chevron_right</i>
+    </button>
+    <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect"
+            ng-click="pager.nextPage(true)">
+        <!-- Right aligned menu below button -->
+        <i class="material-icons">fast_forward</i>
+    </button>
+</div>

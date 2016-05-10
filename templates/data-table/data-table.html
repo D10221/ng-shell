@@ -93,8 +93,9 @@
         <tbody >
         <!--ROWS-->
         <tr ng-repeat="row in vm.table.elements | orderBy:vm.table.orderBy:vm.table.reverseOrder"
-            ng-if="row | isVisible"
+            ng-if="vm.pager.isVisible(row.index) && row | isVisible"
             ng-class="row.isDirty ? 'row-dirty' : '' ">
+            <!--* TODO: Must be Visible Index-->
             <td class="mdl-data-table__cell--non-numeric">
                 <button class="mdl-button mdl-js-button mdl-button--icon"
                         ng-click="vm.toggleSelected(row)">
@@ -116,15 +117,9 @@
         </tr>
         </tbody>
     </table>
-    <div class="mdl-card__actions mdl-card--border">
-        <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
-            <!-- Right aligned menu below button -->
-            <i class="material-icons">chevron_left</i>
-        </button>
-        <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
-            <!-- Right aligned menu below button -->
-            <i class="material-icons">chevron_right</i>
-        </button>
+    <!--Card Footer-->
+    <div class="mdl-card__actions mdl-card--border" style="min-height: 50px">
+       <tnx-pager pager="vm.pager"></tnx-pager>
     </div>
     <div class="mdl-card__menu">
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable"

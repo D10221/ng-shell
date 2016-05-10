@@ -10,6 +10,7 @@ import {layouts} from "./Layout";
 
 import {isVisible, moveElement, Direction}  from './TableElementTools';
 import {Cell} from "./Cell";
+import {Pager} from "./Pager";
 
 export class TnxTableCtrl implements Rx.Disposable {
     
@@ -21,6 +22,8 @@ export class TnxTableCtrl implements Rx.Disposable {
 
     disposables = new Rx.CompositeDisposable();
 
+    pager = new Pager(null);
+    
     constructor(private $scope,private $timeout) {
         
         var vm = $scope.source;
@@ -47,7 +50,7 @@ export class TnxTableCtrl implements Rx.Disposable {
 
             switch (key) {
                 case 'reload':
-                    eBus.onNext( { sender: this, args: { key: 'reload', value : true } } );
+                    eBus.onNext( { sender: this, args: { key: 'reload', value : 0 /*Page Number?*/ } } );
                     break;
             }
         };
@@ -66,6 +69,7 @@ export class TnxTableCtrl implements Rx.Disposable {
     rebuild: (e?:EventArgs) => void = (e) => {
         this.data = e? e.args.value  as DataSource: this.data;
         this.table = this.toTable(this.data);
+        this.pager.collection = this.table && this.table.elements? this.table.elements : [] ;
     };
 
     dispose: ()=> void = ()=> {
@@ -291,7 +295,7 @@ export class TnxTableCtrl implements Rx.Disposable {
     
     dropLayout(e:TableElement){
         layouts.drop(e);
-        this.$timeout(this.rebuild());
+        this.$timeout(this.rebuild(null));
     }
 
     toggleEditing(x: TableElement, state?: boolean ){
@@ -321,7 +325,7 @@ export class TnxTableCtrl implements Rx.Disposable {
                     
                     layouts.save(source);
                     layouts.save(dest);
-                    this.rebuild();
+                    this.rebuild(null);
                 })
                  
             });           
