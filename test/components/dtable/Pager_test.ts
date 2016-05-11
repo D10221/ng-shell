@@ -1,77 +1,81 @@
+///<reference path="../../../node_modules/rx/ts/rx.all.d.ts"/>
 
 import {Pager} from "../../../src/components/dTable/Pager";
+import {Visibility} from "../../../src/components/dTable/definitions";
 
-describe('Pager', ()=>{
-   //
-    it('Works', ()=>{
 
-        var collection = _.range(100);
-        var pager = new Pager(collection);
-        expect(pager.nOfPages).toEqual(10);
+describe('Pager', ()=> {
+    //
+    it('DefaultValues', ()=> {
+        var pager = new Pager();
+        expect(pager.nOfPages).toEqual(0, 'NoOfPages');
         expect(pager.currentPage).toEqual(0);
-        expect(pager.pageEnd).toEqual(10);
         expect(pager.pageStart).toEqual(0);
-        //Bullets
-        expect(pager.pageBullets.length).toEqual(5);
-        //
-        expect(_.join(pager.pageBullets, '')).toEqual('01234');
+        expect(pager.pageEnd).toEqual(0);
+        expect(pager.visible).toEqual(Visibility.hidden)
+    });
 
-        var currentPage = 0 ;
-        var pageChanged =
-        pager.pageEvents.asObservable()
-            .where(e=>e.args.key == 'next' || e.args.key == 'prev' )
-            .subscribe(e=>{
-             currentPage  = e.args.value;
-            //console.log(`${e.args.key} : currentPage: ${currentPage}`)
-        });
+    it('Visibility', ()=> {
+        var pager = new Pager();
+        pager.collectionLength = 9;
+        pager.pageLen = 3;
+        expect(pager.visible).toEqual(Visibility.visible);
+        pager.collectionLength = 3;
+        pager.pageLen = 9;
+        expect(pager.visible).toEqual(Visibility.hidden);
+        pager.collectionLength = 1;
+        pager.pageLen = 1;
+        expect(pager.visible).toEqual(Visibility.hidden);
+        pager.collectionLength = 10;
+        pager.pageLen = 1;
+        expect(pager.visible).toEqual(Visibility.visible);
+    });
 
+    it('PageStarts-Ends', ()=> {
+        var pager = new Pager();
+        expect(pager.pageStart).toEqual(0);
+        expect(pager.pageEnd).toEqual(0);
+        pager.collectionLength = 3;
+        expect(pager.pageStart).toEqual(0);
+        expect(pager.pageEnd).toEqual(3);
+        pager.collectionLength = 11;
+        expect(pager.pageStart).toEqual(0);
+        expect(pager.pageEnd).toEqual(/*default value*/10);
         pager.nextPage();
-
-        expect(pager.nOfPages).toEqual(10);
         expect(pager.currentPage).toEqual(1);
         expect(pager.pageStart).toEqual(10);
-        expect(pager.pageEnd).toEqual(20);
-        expect(currentPage).toEqual(1);
+        expect(pager.pageEnd).toEqual(11);
 
         pager.prevPage();
-
-        expect(pager.nOfPages).toEqual(10);
         expect(pager.currentPage).toEqual(0);
         expect(pager.pageStart).toEqual(0);
         expect(pager.pageEnd).toEqual(10);
-        expect(currentPage).toEqual(0);
 
-        //Should do Nothing
-        pager.prevPage();
-+
-        expect(pager.nOfPages).toEqual(10);
-        expect(pager.currentPage).toEqual(0);
-        expect(pager.pageStart).toEqual(0);
-        expect(pager.pageEnd).toEqual(10);
-        expect(currentPage).toEqual(0);
+    });
 
-        //Exceed Upper Limit
-        _.range(20).forEach(n=>{
-//            console.log('next');
-            pager.nextPage();
-        });
-        //Never Changes: 1 based , targets foreach
-        expect(pager.nOfPages).toEqual(10);
-        //Last Page: Zero Based, holds last segment
-        expect(pager.currentPage).toEqual(9);
-        //Last Page Start
-        expect(pager.pageStart).toEqual(90);
-        // Last Segment : upto last item
-        expect(pager.pageEnd).toEqual(100);
-        //
-        expect(currentPage).toEqual(9);
-        //
-        expect(pager.pageBullets.length).toEqual(5);
-        expect(_.join(pager.pageBullets, '')).toEqual('56789');
+    it("VisibleIndex", ()=> {
+        var pager = new Pager(/*pageLen*/3);
+        pager.collectionLength = 3;
+        expect(pager.isVisible(0, null)).toEqual(true);
+        expect(pager.isVisible(1, null)).toEqual(true);
+        expect(pager.isVisible(2, null)).toEqual(true);
+        expect(pager.isVisible(3, null)).toEqual(true);
+        expect(pager.isVisible(4, null)).toEqual(false);
 
-        pageChanged.dispose();
+        expect(pager.isVisible(3, 0)).toEqual(false);
+        expect(pager.isVisible(/*index*/3, /*collectionLength*/1))
+            .toEqual(false);
+        expect(pager.isVisible(3, 2)).toEqual(false);
+    });
+    
+    it('Bullets', ()=> {
+        var pager = new Pager();
+        pager.collectionLength = 1;
+        expect(pager.pageBullets.length ).toEqual(5);
+        var expected = _.range(5).map(x=> 'true').join('');
+        expect(pager.pageBullets.map(x=> x.visible).join(''))
+            .toEqual(expected);
 
-
-   }); 
+    })
 });
 

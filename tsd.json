@@ -49,6 +49,18 @@
     },
     "moment/moment-node.d.ts": {
       "commit": "6052959591c9bc6f8463c58220965c7030ba934d"
+    },
+    "webrtc/MediaStream.d.ts": {
+      "commit": "741430a178043bfca40e3a343b8b6f7610104093"
+    },
+    "filesystem/filesystem.d.ts": {
+      "commit": "741430a178043bfca40e3a343b8b6f7610104093"
+    },
+    "filewriter/filewriter.d.ts": {
+      "commit": "741430a178043bfca40e3a343b8b6f7610104093"
+    },
+    "chrome/chrome.d.ts": {
+      "commit": "741430a178043bfca40e3a343b8b6f7610104093"
     }
   }
 }

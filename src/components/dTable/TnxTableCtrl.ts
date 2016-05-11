@@ -69,7 +69,7 @@ export class TnxTableCtrl implements Rx.Disposable {
     rebuild: (e?:EventArgs) => void = (e) => {
         this.data = e? e.args.value  as DataSource: this.data;
         this.table = this.toTable(this.data);
-        this.pager.collection = this.table && this.table.elements? this.table.elements : [] ;
+        this.pager.collectionLength = (this.table && this.table.elements && this.table.elements.length) || 0  ;
     };
 
     dispose: ()=> void = ()=> {
@@ -262,7 +262,10 @@ export class TnxTableCtrl implements Rx.Disposable {
     isVisible(e:any) : boolean {
         return e.visibility == Visibility.visible;
     }
-
+    
+    get VisibleElements() : TableElement[] {
+        return _.filter(this.table.elements, x=> this.isVisible(x));
+    } 
 
     filterBy(x){
         var column = (x as iColumn);

@@ -1,43 +1,54 @@
-import {EventArgs} from "../../infrastructure/interfaces";
 
-export class Pager {
 
+import {EventArgs, IHaveEvents, IHaveBackingFields} from "../../infrastructure/interfaces";
+import {Visibility} from "./definitions";
+import {memoize} from "../../infrastructure/Memoize";
+import {PropertyChanged} from "../../infrastructure/PropertyChanged";
+
+
+
+export class Pager implements IHaveEvents, IHaveBackingFields {
+
+    backingFields = new WeakMap<string,any>();
+
+    @PropertyChanged
+    get pageLen() : number {return null };
+    set pageLen(value: number){ /**/ }
+    
+    constructor(pageLen?: number ) {
+
+        this.id = _.uniqueId('pager_');
+
+        this.pageLen = _.isNumber(pageLen)? pageLen : 10 ;
+        
+        this.nextPage = this.nextPage.bind(this);
+        this.prevPage = this.prevPage.bind(this);
+
+        this.backingFields.set('pageLen', 0);
+    }
+
+    private _pageLen = 0 ;     
+    
+    currentPage: number = 0 ;
+    bulletsLen = 5;
+    
     id :any /*unique*/;
 
-    bulletsLen = 5;
-
-    get pageBullets () : number[] {
+    static memoized = new WeakMap<string,any>();
+    
+    @memoize(Pager.memoized)
+    get pageBullets () : {index: number, visible: boolean }[] {
         return _.chain(_.range(this.pageLen))
+            .map(x=> { return { index: x, visible: true}})
             .chunk(this.bulletsLen)
-            .value()[_.floor( this.currentPage / this.bulletsLen )]
+            .value()[_.floor( this.currentPage / this.bulletsLen )];
     }
-
-    constructor(collection:any[], pageLen?: number ) {
-        this.id = _.uniqueId('pager_');
-        this.pageLen = pageLen || 10 ;
-        //***
-        this.collection = collection;
-    }
-
-    private _collection: any[] ;
-
-    get collection():any[] {
-        return this._collection;
-    }
-
-    set collection(value: any[]){
-        this._collection = value || [] ;
-        this.onCollectionChanged();
-    }
-
-    onCollectionChanged:()=> void = ()=> {
-        this.currentPage = 0 ;
-        this.pageLen = this.pageLen || 10 ;
-    };
-
+     
+    collectionLength :number = 0 ;
+    
     pageEvents = new Rx.Subject<EventArgs>();
 
-    nextPageEvent(key:string, value:any){
+    raiseNextEvent(key:string, value:any){
         this.pageEvents.onNext({
             sender:this,
             args: {
@@ -47,48 +58,42 @@ export class Pager {
         });
     }
 
-    pageLen: number;
-
     get nOfPages() :number {
-        var collectionLen = this.getCollectionLen();
-        return collectionLen > 1 ? collectionLen / this.pageLen : 1 ;
+        return _.floor(this.collectionLength / this.pageLen );
     }
 
     get pageStart (): number {
-        return this.pageEnd - this.pageLen;
+        var segment = this.pageLen*(this.currentPage);
+        //var value = segment - this.pageEnd ;
+        return segment;
     };
 
     get pageEnd(): number{
-        return (this.currentPage +1 /*Zero vs One*/)  * this.pageLen;
+        var value = (this.currentPage + 1)  * this.pageLen;
+        return this.collectionLength < value  ? this.collectionLength : value ;
     };
 
-    currentPage: number;
-
-    getCollectionLen : () => number = () => {
-        if(this.collection && this.collection.length )
-        return this.collection.length ;
-        return 1;
-    };
-    
-    nextPage:(n?: number, fast?:boolean ) => void =(n,fast)=> {
-
-        var nextPagge =  n || n==0 ? n : this.currentPage + ((fast==true) ? this.bulletsLen : 1) ;
+    nextPage();
+    nextPage(n?: number, fast?:boolean ){
+        var nextPagge =  _.isNumber(n) ? n : this.currentPage + ((fast==true) ? this.bulletsLen : 1) ;
         
-        if( nextPagge * this.pageLen  >  this.getCollectionLen() - this.pageLen )  {
+        if( nextPagge * this.pageLen  >  this.pageEnd )  {
             return;
         }
-        
         this.currentPage = nextPagge;
-        this.nextPageEvent('next', this.currentPage);
+        this.raiseNextEvent('next', this.currentPage);
     };
 
-    prevPage: (fast?:boolean) => void = (fast ) => {
+    prevPage () ;
+    prevPage(fast:boolean);
+    prevPage(fast?:any) {
         var nextPagge = this.currentPage - ( fast == true?  this.bulletsLen : 1 ) ;
-        if( nextPagge < 0  ){
+        
+        if( nextPagge < 0 ){
             return;
         }
         this.currentPage= nextPagge;
-        this.nextPageEvent('prev', this.currentPage);
+        this.raiseNextEvent('prev', this.currentPage);
     };
 
     /***
@@ -97,7 +102,13 @@ export class Pager {
      * @param index
      * @returns {boolean}
      */
-    isVisible : (index:number) => boolean = (index) => {
-        return index >= this.pageStart && index <= this.pageEnd;
-    }
+    isVisible : (index:number, collectionLength: number) => boolean = (index, collectionLength) => {
+        if(_.isNumber(collectionLength)){
+            this.collectionLength = collectionLength;
+        }
+        var result = index >= this.pageStart && index <= this.pageEnd;
+        return result;
+    };
+    
+    get visible(): Visibility { return this.nOfPages > 1 ? Visibility.visible : Visibility.hidden ; }
 }
