@@ -11,3 +11,11 @@ export interface KeyValue {
 export interface IObservableThing {
     xEvents : Rx.Subject<EventArgs>;
 }
+
+export enum Visibility {
+    visible, hidden
+}
+
+export enum SortDirection {
+    desc, asc
+}

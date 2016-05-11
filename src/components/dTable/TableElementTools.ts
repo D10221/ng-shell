@@ -1,21 +1,17 @@
-import {TableElement, Visibility, iTable, TableElementRole} from "./definitions";
+import {TableElement, iTable, TableElementRole} from "./definitions";
+import {Visibility, SortDirection} from "../../infrastructure/interfaces";
 
 export function isVisible(e: TableElement) :boolean{
     return e.visibility == Visibility.visible;
 }
 
-export enum Direction {
-    //left,right,up,down
-    desc, asc
-}
-
-export function nextVisible(elements: TableElement[],source:TableElement, direction: Direction ) : TableElement {
+export function nextVisible(elements: TableElement[],source:TableElement, direction: SortDirection ) : TableElement {
     
-    if(direction == Direction.desc) {
+    if(direction == SortDirection.desc) {
         return findNextDesc(elements, source.index);
     }
     
-    if(direction == Direction.asc){
+    if(direction == SortDirection.asc){
         return findNextAsc(elements, source.index);
     }
     
@@ -44,7 +40,7 @@ export function moveElement(
     
     elements: TableElement[],
     source:TableElement, 
-    direction: Direction , 
+    direction: SortDirection ,
     onSuccess: (source: TableElement, destination: TableElement)=> void ){
     
     var found = nextVisible(elements,source, direction);

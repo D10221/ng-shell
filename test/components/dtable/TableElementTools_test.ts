@@ -1,5 +1,5 @@
 import {
-    nextVisible, findNextAsc, findNextDesc, Direction,
+    nextVisible, findNextAsc, findNextDesc, SortDirection,
     isVisible
 } from '../../../src/components/dTable/TableElementTools';
 
@@ -45,11 +45,11 @@ describe('TableElementTools', ()=> {
             expect(found).toBeDefined();
             expect(found.index).toEqual(0);
             
-            found = nextVisible(elements, elements[0], Direction.asc);
+            found = nextVisible(elements, elements[0], SortDirection.asc);
             expect(found).toBeDefined();
             expect(found.index).toEqual(1);
 
-            found = nextVisible(elements, elements[1], Direction.desc);
+            found = nextVisible(elements, elements[1], SortDirection.desc);
             expect(found).toBeDefined();
             expect(found.index).toEqual(0);
             

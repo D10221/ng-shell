@@ -1,14 +1,13 @@
 
-import {EventArgs} from "../../infrastructure/interfaces";
+import {EventArgs, Visibility, SortDirection} from "../../infrastructure/interfaces";
 
 import {
-    DataSource, iTable, iColumn, iRow, iCell, TableElement, TableElementRole, Visibility,
-    Filter, ColumnDefinition
+    DataSource, iTable, iColumn, iRow, iCell, TableElement, TableElementRole, Filter, ColumnDefinition
 } from "./definitions";
 
 import {layouts} from "./Layout";
 
-import {isVisible, moveElement, Direction}  from './TableElementTools';
+import {isVisible, moveElement}  from './TableElementTools';
 import {Cell} from "./Cell";
 import {Pager} from "./Pager";
 
@@ -64,6 +63,8 @@ export class TnxTableCtrl implements Rx.Disposable {
             // watcherDispose();
             this.dispose();
         });
+        
+        this.disposables.add(this.pager);
     }
 
     rebuild: (e?:EventArgs) => void = (e) => {
@@ -260,7 +261,7 @@ export class TnxTableCtrl implements Rx.Disposable {
     isVisible(e:Filter) : boolean;
     isVisible(e:TableElement) : boolean ;
     isVisible(e:any) : boolean {
-        return e.visibility == Visibility.visible;
+        return isVisible(e);
     }
     
     get VisibleElements() : TableElement[] {
@@ -322,7 +323,7 @@ export class TnxTableCtrl implements Rx.Disposable {
         
         if(e.role == TableElementRole.column){
 
-            moveElement(e.parent.elements, e, direction == 'asc' ? Direction.asc : Direction.desc  ,(source, dest )=> {
+            moveElement(e.parent.elements, e, direction == 'asc' ? SortDirection.asc : SortDirection.desc  ,(source, dest )=> {
                 
                 this.$timeout(()=>{
                     

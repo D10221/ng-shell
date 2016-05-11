@@ -1,12 +1,11 @@
 
 
-import {EventArgs, IObservableThing} from "../../infrastructure/interfaces";
-import {Visibility} from "./definitions";
-import {memoize} from "../../infrastructure/Memoize";
+import {EventArgs, IObservableThing, Visibility} from "../../infrastructure/interfaces";
+import {memoize, invalidate } from "../../infrastructure/Memoize";
 import {ObservableThingProperty} from "../../infrastructure/ObservableThingProperty";
 
 
-export class Pager implements IObservableThing {
+export class Pager implements IObservableThing, Rx.Disposable  {
     /***
      * IObservableThing implementation
      * @type {Subject<EventArgs>}
@@ -25,18 +24,29 @@ export class Pager implements IObservableThing {
         
         this.nextPage = this.nextPage.bind(this);
         this.prevPage = this.prevPage.bind(this);
+        
+        this.disposables.add(
+            this.xEvents.asObservable()
+                .where (e=> e.sender == this )
+                .where (e=> e.args.key in ['currentPage', 'bulletsLen', 'collectionLength'])
+                .subscribe( () => {
+                    invalidate(this, 'pageBullets');
+                })
+        );
     }
-
-
+    
+    disposables = new Rx.CompositeDisposable();
+    
+    dispose(){
+        this.disposables.dispose();
+    }
     
     currentPage: number = 0 ;
     bulletsLen = 5;
     
     id :any /*unique*/;
-
-    static memoized = new WeakMap<string,any>();
     
-    @memoize(Pager.memoized)
+    @memoize
     get pageBullets () : {index: number, visible: boolean }[] {
         return _.chain(_.range(this.pageLen))
             .map(x=> { return { index: x, visible: true}})
@@ -97,8 +107,8 @@ export class Pager implements IObservableThing {
     };
 
     /***
-     * TODO: Must be Visible Index
-     * or better:  filter collection nto hide rows. but it will be slower  
+     * Must be Visible Index
+     * to do not affect filtering   
      * @param index
      * @returns {boolean}
      */

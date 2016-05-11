@@ -1,24 +1,30 @@
-export function memoize(memoized: WeakMap<string,any>){
 
-    return (target, name, descriptor) => {
+var memoized = new  WeakMap<Object,any>();
 
-        let getter = descriptor.get, setter = descriptor.set;
+export function invalidate(target: Object, key: string){
+    memoized.get(target)[key] = null ;
+}
 
-        descriptor.get = function() {
-            let table = memoizationFor(memoized, this);
-            if (name in table) { return table[name]; }
-            return table[name] = getter.call(this);
-        };
+export function memoize (target: Object, name:string, descriptor: PropertyDescriptor) {
+    
+    let getter = descriptor.get ;
 
-        descriptor.set = function(val) {
-            let table = memoizationFor(memoized, this);
-            setter.call(this, val);
-            table[name] = val;
-        }
+    let setter = descriptor.set;
+
+    descriptor.get = function() {
+        let table = memoizationFor(this);
+        if (name in table) { return table[name]; }
+        return table[name] = getter.call(this);
+    };
+
+    descriptor.set = function(val) {
+        let table = memoizationFor(this);
+        setter.call(this, val);
+        table[name] = val;
     }
 }
 
-function memoizationFor(memoized: WeakMap<string,any>, obj) {
+function memoizationFor(obj) {
     let table = memoized.get(obj);
     if (!table) {
         table = Object.create(null);

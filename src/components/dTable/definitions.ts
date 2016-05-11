@@ -1,11 +1,7 @@
-import {Guid} from "../../infrastructure/Guid";
 
+import {Visibility} from "../../infrastructure/interfaces";
 export enum TableElementRole {
     table, column, row, cell
-}
-
-export enum Visibility {
-    visible, hidden 
 }
 
 export interface TableElement {
