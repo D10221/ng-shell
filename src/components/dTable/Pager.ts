@@ -1,19 +1,21 @@
 
 
-import {EventArgs, IHaveEvents, IHaveBackingFields} from "../../infrastructure/interfaces";
+import {EventArgs, IObservableThing} from "../../infrastructure/interfaces";
 import {Visibility} from "./definitions";
 import {memoize} from "../../infrastructure/Memoize";
-import {PropertyChanged} from "../../infrastructure/PropertyChanged";
+import {ObservableThingProperty} from "../../infrastructure/ObservableThingProperty";
 
 
-
-export class Pager implements IHaveEvents, IHaveBackingFields {
-
-    backingFields = new WeakMap<string,any>();
-
-    @PropertyChanged
-    get pageLen() : number {return null };
-    set pageLen(value: number){ /**/ }
+export class Pager implements IObservableThing {
+    /***
+     * IObservableThing implementation
+     * @type {Subject<EventArgs>}
+     */
+    xEvents = new Rx.Subject<EventArgs>();
+    
+    /*pageLen*/
+    @ObservableThingProperty
+    pageLen: number = 0 ;
     
     constructor(pageLen?: number ) {
 
@@ -23,11 +25,9 @@ export class Pager implements IHaveEvents, IHaveBackingFields {
         
         this.nextPage = this.nextPage.bind(this);
         this.prevPage = this.prevPage.bind(this);
-
-        this.backingFields.set('pageLen', 0);
     }
 
-    private _pageLen = 0 ;     
+
     
     currentPage: number = 0 ;
     bulletsLen = 5;
@@ -45,11 +45,11 @@ export class Pager implements IHaveEvents, IHaveBackingFields {
     }
      
     collectionLength :number = 0 ;
+
     
-    pageEvents = new Rx.Subject<EventArgs>();
 
     raiseNextEvent(key:string, value:any){
-        this.pageEvents.onNext({
+        this.xEvents.onNext({
             sender:this,
             args: {
                 key: key,

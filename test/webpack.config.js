@@ -2,7 +2,7 @@ module.exports = {
     entry: "./test/tests.ts",
     output: {
         path: __dirname,
-        filename: "./bundled_test.js"
+        filename: "../built/test/bundled_test.js"
     },
     resolve: {
         extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js']
@@ -18,7 +18,10 @@ module.exports = {
     ts:{
         configFileName: __dirname+'/test/tsconfig.json',
         compilerOptions:{
-            target: 'es5'
+            target: 'es5',
+            sourceMap: true,
+            experimentalDecorators: true,
+            emitDecoratorMetadata: true
         }
     }
 };
