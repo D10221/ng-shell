@@ -1,7 +1,7 @@
 ///<reference path="../../../node_modules/rx/ts/rx.all.d.ts"/>
 
 import {Pager} from "../../../src/components/dTable/Pager";
-import {Visibility} from "../../../src/components/dTable/definitions";
+import {Visibility} from "../../../src/infrastructure/interfaces";
 
 
 describe('Pager', ()=> {
@@ -12,23 +12,23 @@ describe('Pager', ()=> {
         expect(pager.currentPage).toEqual(0);
         expect(pager.pageStart).toEqual(0);
         expect(pager.pageEnd).toEqual(0);
-        expect(pager.visible).toEqual(Visibility.hidden)
+        expect(pager.visibility).toEqual(Visibility.hidden)
     });
 
     it('Visibility', ()=> {
         var pager = new Pager();
         pager.collectionLength = 9;
         pager.pageLen = 3;
-        expect(pager.visible).toEqual(Visibility.visible);
+        expect(pager.visibility).toEqual(Visibility.visible);
         pager.collectionLength = 3;
         pager.pageLen = 9;
-        expect(pager.visible).toEqual(Visibility.hidden);
+        expect(pager.visibility).toEqual(Visibility.hidden);
         pager.collectionLength = 1;
         pager.pageLen = 1;
-        expect(pager.visible).toEqual(Visibility.hidden);
+        expect(pager.visibility).toEqual(Visibility.hidden);
         pager.collectionLength = 10;
         pager.pageLen = 1;
-        expect(pager.visible).toEqual(Visibility.visible);
+        expect(pager.visibility).toEqual(Visibility.visible);
     });
 
     it('PageStarts-Ends', ()=> {
@@ -56,16 +56,16 @@ describe('Pager', ()=> {
     it("VisibleIndex", ()=> {
         var pager = new Pager(/*pageLen*/3);
         pager.collectionLength = 3;
-        expect(pager.isVisible(0, null)).toEqual(true);
-        expect(pager.isVisible(1, null)).toEqual(true);
-        expect(pager.isVisible(2, null)).toEqual(true);
-        expect(pager.isVisible(3, null)).toEqual(true);
-        expect(pager.isVisible(4, null)).toEqual(false);
+        expect(pager.isIndexVisible(0, null)).toEqual(true);
+        expect(pager.isIndexVisible(1, null)).toEqual(true);
+        expect(pager.isIndexVisible(2, null)).toEqual(true);
+        expect(pager.isIndexVisible(3, null)).toEqual(true);
+        expect(pager.isIndexVisible(4, null)).toEqual(false);
 
-        expect(pager.isVisible(3, 0)).toEqual(false);
-        expect(pager.isVisible(/*index*/3, /*collectionLength*/1))
+        expect(pager.isIndexVisible(3, 0)).toEqual(false);
+        expect(pager.isIndexVisible(/*index*/3, /*collectionLength*/1))
             .toEqual(false);
-        expect(pager.isVisible(3, 2)).toEqual(false);
+        expect(pager.isIndexVisible(3, 2)).toEqual(false);
     });
     
     it('Bullets', ()=> {

@@ -122,7 +122,7 @@ export class TnxTableCtrl implements Rx.Disposable {
         
         for(var key in first ){
                          
-            var definition = _.find(definitions, d => d.key == key );
+            let definition = _.find(definitions, d => d.key == key );
 
             var column = {
                 index:  i,

@@ -1,11 +1,11 @@
 import {
-    nextVisible, findNextAsc, findNextDesc, SortDirection,
-    isVisible
+    nextVisible, findNextAsc, findNextDesc
 } from '../../../src/components/dTable/TableElementTools';
 
-import {TableElement, Visibility, TableElementRole} from "../../../src/components/dTable/definitions";
+import {TableElement,  TableElementRole} from "../../../src/components/dTable/definitions";
 
 import 'lodash';
+import {SortDirection, Visibility} from "../../../src/infrastructure/interfaces";
 
 describe('TableElementTools', ()=> {
 

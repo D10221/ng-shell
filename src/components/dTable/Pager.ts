@@ -56,8 +56,6 @@ export class Pager implements IObservableThing, Rx.Disposable  {
      
     collectionLength :number = 0 ;
 
-    
-
     raiseNextEvent(key:string, value:any){
         this.xEvents.onNext({
             sender:this,
@@ -112,7 +110,7 @@ export class Pager implements IObservableThing, Rx.Disposable  {
      * @param index
      * @returns {boolean}
      */
-    isVisible : (index:number, collectionLength: number) => boolean = (index, collectionLength) => {
+    isIndexVisible : (index:number, collectionLength: number) => boolean = (index, collectionLength) => {
         if(_.isNumber(collectionLength)){
             this.collectionLength = collectionLength;
         }
@@ -120,5 +118,11 @@ export class Pager implements IObservableThing, Rx.Disposable  {
         return result;
     };
     
-    get visible(): Visibility { return this.nOfPages > 1 ? Visibility.visible : Visibility.hidden ; }
+    get visibility(): Visibility {
+        var isVisible = this.nOfPages > 1 ? Visibility.visible : Visibility.hidden;
+        return isVisible ; 
+    }
+    get isVisible(): boolean {
+        return this. visibility == Visibility.visible;
+    }
 }

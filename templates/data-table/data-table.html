@@ -93,7 +93,7 @@
         <tbody >
         <!--ROWS-->
         <tr ng-repeat="row in vm.table.elements | orderBy:vm.table.orderBy:vm.table.reverseOrder as results track by $index"
-            ng-if="vm.pager.isVisible($index,vm.VisibleElements.length) && row | isVisible"
+            ng-if="vm.pager.isIndexVisible($index,vm.VisibleElements.length) && row | isVisible"
             ng-class="row.isDirty ? 'row-dirty' : '' ">
             <!--* TODO: Must be Visible Index-->
             <td class="mdl-data-table__cell--non-numeric">

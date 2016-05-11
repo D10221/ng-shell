@@ -3,9 +3,10 @@
 ///<reference path="../../../typings/jasmine/jasmine.d.ts"/>
 
 import {Guid} from "../../../src/infrastructure/Guid";
-import {Visibility, TableElementRole, TableElement} from "../../../src/components/dTable/definitions";
+import { TableElementRole, TableElement} from "../../../src/components/dTable/definitions";
 import {Layouts} from "../../../src/components/dTable/Layout";
 import {FakeStorage} from "../../support/FakeStorage";
+import {Visibility} from "../../../src/infrastructure/interfaces";
 
 /*interface Storage {
     length: number;
