@@ -4,6 +4,10 @@ import {EventArgs, IObservableThing, Visibility} from "../../infrastructure/inte
 import {memoize, invalidate } from "../../infrastructure/Memoize";
 import {ObservableThingProperty} from "../../infrastructure/ObservableThingProperty";
 
+interface PageBullet {
+    index: number;
+    visible: boolean;
+}
 
 export class Pager implements IObservableThing, Rx.Disposable  {
     
@@ -16,6 +20,15 @@ export class Pager implements IObservableThing, Rx.Disposable  {
     /*pageLen*/
     @ObservableThingProperty
     pageLen: number = 0 ;
+
+    @ObservableThingProperty
+    currentPage: number = 0 ;
+
+    @ObservableThingProperty
+    bulletsLen = 5;
+
+    @ObservableThingProperty
+    collectionLength :number = 0 ;
     
     constructor(pageLen?: number ) {
 
@@ -29,9 +42,12 @@ export class Pager implements IObservableThing, Rx.Disposable  {
         this.disposables.add(
             this.xEvents.asObservable()
                 .where (e=> e.sender == this )
-                .where (e=> e.args.key in ['currentPage', 'bulletsLen', 'collectionLength'])
+                .where (e=> {
+                    return _.includes(['pageLen','currentPage', 'bulletsLen', 'collectionLength'], e.args.key);
+                })
                 .subscribe( () => {
                     invalidate(this, 'pageBullets');
+                    console.log(this.pageBullets)
                 })
         );
     }
@@ -41,21 +57,24 @@ export class Pager implements IObservableThing, Rx.Disposable  {
     dispose(){
         this.disposables.dispose();
     }
-    
-    currentPage: number = 0 ;
-    bulletsLen = 5;
-    
+
     id :any /*unique*/;
-    
+
+    /***
+     * replesents '< [0] [1] [3] ... >' page bullets
+     * has to be emoized, or angular crashes , too many changes 
+     * @returns {PageBullet[]}
+     */
     @memoize
-    get pageBullets () : {index: number, visible: boolean }[] {
+    get pageBullets () : PageBullet[] {
         return _.chain(_.range(this.pageLen))
-            .map(x=> { return { index: x, visible: true}})
+            .map(x=> { return {
+                index: x,
+                visible: true
+            }})
             .chunk(this.bulletsLen)
-            .value()[_.floor( this.currentPage / this.bulletsLen )];
+            .value()[ this.currentPage * this.bulletsLen ];
     }
-     
-    collectionLength :number = 0 ;
 
     raiseNextEvent(key:string, value:any){
         this.xEvents.onNext({
@@ -73,7 +92,6 @@ export class Pager implements IObservableThing, Rx.Disposable  {
 
     get pageStart (): number {
         var segment = this.pageLen*(this.currentPage);
-        //var value = segment - this.pageEnd ;
         return segment;
     };
 
@@ -83,15 +101,24 @@ export class Pager implements IObservableThing, Rx.Disposable  {
     };
 
     nextPage();
-    nextPage(n?: number, fast?:boolean ){
-        var nextPagge =  _.isNumber(n) ? n : this.currentPage + ((fast==true) ? this.bulletsLen : 1) ;
+    nextPage(n?: number);
+    nextPage(n?: number, fast?:boolean );
+    nextPage(x?:any){
+
+        var n = arguments[0];
+        var fast = arguments.length > 0  ? arguments[1] : null;
         
-        if( nextPagge * this.pageLen  >  this.pageEnd )  {
+        var nextPagge =  _.isNumber(n) ? n : this.currentPage + ((fast==true) ? this.bulletsLen : 1) ;
+
+        var ok = nextPagge * this.pageLen  < this.collectionLength;
+        console.log(`nextPagge: ${nextPagge} * pageLen:${this.pageLen } >=  collectionLength:${this.collectionLength} = ok: ${ok}`);
+        if( !ok )  {
             return;
         }
+
         this.currentPage = nextPagge;
-        this.raiseNextEvent('next', this.currentPage);
-    };
+        console.log(`currentPage: ${this.currentPage}, starts:${this.pageStart}, ends:=${this.pageEnd}`);
+    }
 
     prevPage () ;
     prevPage(fast:boolean);
@@ -102,7 +129,7 @@ export class Pager implements IObservableThing, Rx.Disposable  {
             return;
         }
         this.currentPage= nextPagge;
-        this.raiseNextEvent('prev', this.currentPage);
+        console.log(`currentPage: ${this.currentPage}, starts:${this.pageStart}, ends:=${this.pageEnd}`);
     };
 
     /***
@@ -123,6 +150,7 @@ export class Pager implements IObservableThing, Rx.Disposable  {
         var isVisible = this.nOfPages > 1 ? Visibility.visible : Visibility.hidden;
         return isVisible ; 
     }
+
     get isVisible(): boolean {
         return this. visibility == Visibility.visible;
     }

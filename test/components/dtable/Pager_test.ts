@@ -67,15 +67,48 @@ describe('Pager', ()=> {
             .toEqual(false);
         expect(pager.isIndexVisible(3, 2)).toEqual(false);
     });
-    
-    it('Bullets', ()=> {
-        var pager = new Pager();
-        pager.collectionLength = 1;
-        expect(pager.pageBullets.length ).toEqual(5);
-        var expected = _.range(5).map(x=> 'true').join('');
-        expect(pager.pageBullets.map(x=> x.visible).join(''))
-            .toEqual(expected);
 
-    })
+    describe('current page',()=>{
+        it('moves',()=>{
+            var pager = new Pager();
+            pager.collectionLength = 10;
+            expect(pager.currentPage).toEqual(0);
+
+            pager.nextPage();
+            expect(pager.currentPage).toEqual(1);
+
+            pager.nextPage(4);
+            expect(pager.currentPage).toEqual(4);
+        })
+    });
+    
+    describe('PageBullets',()=>{
+
+        describe('Visibility',()=>{
+
+            it('defaults to visible', ()=> {
+                var pager = new Pager();
+                pager.collectionLength = 1;
+                expect(pager.pageBullets.length ).toEqual(5);
+                var expected = _.range(5).map(x=> 'true').join('');
+                expect(pager.pageBullets.map(x=> x.visible).join(''))
+                    .toEqual(expected);
+
+            });
+        });
+
+       it('moves index',()=>{
+           var pager = new Pager();
+           pager.collectionLength = 20;
+           
+           expect(pager.pageBullets.length ).toEqual(5);
+           var expected = _.range(5).map(x=> `${x}:true`).join(',');
+           var actual = pager.pageBullets.map(x=> `${x.index}:${x.visible}`).join(',');
+           console.log(`actual: ${actual}`);
+           console.log(`expected: ${expected}`);
+           expect(actual).toEqual(expected);
+
+       });
+    });
 });
 
