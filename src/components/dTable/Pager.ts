@@ -6,6 +6,7 @@ import {ObservableThingProperty} from "../../infrastructure/ObservableThingPrope
 
 
 export class Pager implements IObservableThing, Rx.Disposable  {
+    
     /***
      * IObservableThing implementation
      * @type {Subject<EventArgs>}

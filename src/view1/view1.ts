@@ -29,7 +29,14 @@ class View1Ctrl implements Rx.Disposable {
                 })
         );
         
-        fetch('data/stock.json')
+        fetch('data/stock.json',  {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin'}
+            )
             .then(r=>r.json())
             .then(data=> {
                 
