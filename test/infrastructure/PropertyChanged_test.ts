@@ -25,7 +25,7 @@ describe('ObservableThingProperty',()=>{
         target.xEvents.asObservable()
             .where(e=> e.args.key == 'prop')
             .subscribe(e=>{
-                console.log(e);
+               // console.log(e);
                eventValue = e.args.value;
             });
 
