@@ -2,6 +2,7 @@
 
 import {Pager} from "../../../src/components/dTable/Pager";
 import {Visibility} from "../../../src/infrastructure/interfaces";
+import {memoize, invalidate } from "../../../src/infrastructure/Memoize";
 
 
 describe('Pager', ()=> {
@@ -46,7 +47,7 @@ describe('Pager', ()=> {
         expect(pager.pageStart).toEqual(10);
         expect(pager.pageEnd).toEqual(11);
 
-        pager.prevPage();
+        pager.nextPage('desc');
         expect(pager.currentPage).toEqual(0);
         expect(pager.pageStart).toEqual(0);
         expect(pager.pageEnd).toEqual(10);
@@ -70,45 +71,66 @@ describe('Pager', ()=> {
 
     describe('current page',()=>{
         it('moves',()=>{
+            
             var pager = new Pager();
             pager.collectionLength = 10;
             expect(pager.currentPage).toEqual(0);
 
-            pager.nextPage();
+            pager.nextPage('asc');
             expect(pager.currentPage).toEqual(1);
 
             pager.nextPage(4);
-            expect(pager.currentPage).toEqual(4);
+            expect(pager.currentPage).toEqual(1);
+
+            pager.nextPage('desc');
+            expect(pager.currentPage).toEqual(0);
+
+            pager.nextPage('desc');
+            expect(pager.currentPage).toEqual(0);
+
+            pager.nextPage(1);
+            expect(pager.currentPage).toEqual(1);
+            
+            pager.collectionLength = 12;
+            pager.pageLen = 4 ;
+            pager.nextPage(2);
+            expect(pager.currentPage).toEqual(2);
         })
     });
     
     describe('PageBullets',()=>{
+        
+        it('works',()=>{
+            
+            var pager = new Pager();
+            pager.collectionLength = 12;
+            // wishful
+            pager.pageLen = 3;
+            pager.bulletsLen = 4;
 
-        describe('Visibility',()=>{
+            //currentPage: 0 
+            var bullets = pager.pageBullets;
+            expect(JSON.stringify(bullets)).toEqual("[0,1,2,3]");
+            pager.nextPage(); // 1
+            invalidate(pager, 'pageBullets');
+            bullets = pager.pageBullets;
+            expect(JSON.stringify(bullets)).toEqual("[0,1,2,3]");
+            
+            pager.nextPage(); // 2
+            bullets = pager.pageBullets;
+            expect(JSON.stringify(bullets)).toEqual("[0,1,2,3]");
+            
+            pager.nextPage(); // 3
+            bullets = pager.pageBullets;
+            expect(JSON.stringify(bullets)).toEqual("[0,1,2,3]");
+            
+            pager.nextPage(); // 4
+            bullets = pager.pageBullets;
+            expect(pager.currentPage).toEqual(4);
+            //invalidate(pager, 'pageBullets');
+            expect(JSON.stringify(bullets)).toEqual("[4,5,6,7]");
 
-            it('defaults to visible', ()=> {
-                var pager = new Pager();
-                pager.collectionLength = 1;
-                expect(pager.pageBullets.length ).toEqual(5);
-                var expected = _.range(5).map(x=> 'true').join('');
-                expect(pager.pageBullets.map(x=> x.visible).join(''))
-                    .toEqual(expected);
-
-            });
-        });
-
-       it('moves index',()=>{
-           var pager = new Pager();
-           pager.collectionLength = 20;
-           
-           expect(pager.pageBullets.length ).toEqual(5);
-           var expected = _.range(5).map(x=> `${x}:true`).join(',');
-           var actual = pager.pageBullets.map(x=> `${x.index}:${x.visible}`).join(',');
-           console.log(`actual: ${actual}`);
-           console.log(`expected: ${expected}`);
-           expect(actual).toEqual(expected);
-
-       });
+        })
     });
 });
 
