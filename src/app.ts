@@ -8,11 +8,14 @@ import './view2/view2';
 import './components/dTable/dTable';
 import {SideNav} from "./SideNav";
 import {NgShellRoot} from "./NgShellRoot";
+import './components/login/login';
+import {MessageBus} from "./infrastructure/MessageBus";
 
 // Declare app level module which depends on views, and components
 angular.module('ngShell', [     
         'ngRoute',
         'tinyx.dTable',
+        'tinyx.login',
         'ngShell.view1',
         'ngShell.view2',
         'ngShell.version'
@@ -20,7 +23,8 @@ angular.module('ngShell', [
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.otherwise({redirectTo: '/view1'});
     }])
-    .service('sideNav', SideNav)
+    .service('MessageBus', MessageBus)
+    .service('SideNav', SideNav)
     .controller('NgShellRoot', NgShellRoot)
     .directive('onEnter', function () {
         return function (scope, element, attrs) {

@@ -1,0 +1,63 @@
+<!--DIALOG-->
+<!--ng-controller="LoginDialogViewModel as loginVm"-->
+<dialog class="mdl-dialog" id="login-dialog" >
+
+    <div class="mdl-grid " >
+        <h4 class="mdl-dialog__title"  >{{loginVm.label}}</h4>
+        <div style="padding-top: 30px;padding-left: 5px" ng-show="loginVm.isBusy">
+            <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner "
+                 ng-click="loginVm.isBusy ? 'is-active'  : '' ">
+            </div>
+        </div>
+        <div ng-show="loginVm.error != '' && loginVm.error != '?'" style="padding-top: 30px;padding-left: 5px" >
+            <div id="tt1" class="icon material-icons" style="color: red">error</div>
+            <div class="mdl-tooltip" for="tt1" >
+                <span >{{loginVm.error}}</span>
+            </div>
+        </div>
+    </div>
+    <div class="mdl-dialog__content">
+
+        <form id="sign-in-form">
+
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <label class="mdl-textfield__label" for="username"> username: </label>
+                <input class="mdl-textfield__input"
+                       id="username"
+                       type="text"
+                       ng-disabled="loginVm.signedIn"
+                       ng-model="loginVm.username">
+            </div>
+
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <label class="mdl-textfield__label" for="password"> Password: </label>
+                <input class="mdl-textfield__input password"
+                       id="password"
+                       type="password"
+                       ng-model="loginVm.password"
+                       ng-disabled="loginVm.signedIn">
+            </div>
+
+            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-1">
+                <input type="checkbox" id="checkbox-1"
+                       class="mdl-checkbox__input"
+                       ng-checked="loginVm.rememberme">
+                            <span class="mdl-checkbox__label"
+                                  id="xlabel">Keep me signed in</span>
+            </label>
+        </form>
+
+    </div>
+    <div class="mdl-dialog__actions">
+        <button
+                type="button"
+                class="mdl-button ok"
+                ng-click="loginVm.loginCmd.execute(null)">Ok
+        </button>
+        <button
+                type="button"
+                class="mdl-button cancel"
+                ng-click="loginVm.closeCmd.execute(x)">Cancel
+        </button>
+    </div>
+</dialog>

@@ -69,7 +69,8 @@ mdl-layout--fixed-header">
             </div>
         </div>
         <button id="show-sign-in-dialog"
-                class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect ">
+                class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect "
+                ng-click="vm.showLoginDialog()">
             <i class="material-icons">account_circle</i>
         </button>
     </div>
@@ -85,8 +86,8 @@ mdl-layout--fixed-header">
 </div>
 <!--MAIN-->
 <main class="mdl-layout__content" ng-view>
-
 </main>
+
 <footer class="mdl-mini-footer">
     <div class="mdl-mini-footer__left-section">
         <div class="mdl-logo">
@@ -107,6 +108,7 @@ mdl-layout--fixed-header">
 
 </div>
 
+<login-dialog ></login-dialog>
 
 <!-- SCRIPTS -->
 <script src="node_modules/material-design-lite-oob/res/material.min.js"></script>

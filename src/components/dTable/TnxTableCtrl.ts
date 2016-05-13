@@ -245,7 +245,9 @@ export class TnxTableCtrl implements Rx.Disposable {
     }
     
     get VisibleElements() : TableElement[] {
-        return _.filter(this.table.elements, x=> this.isVisible(x));
+        return this.table && this.table.elements ?
+            _.filter(this.table.elements, x=> this.isVisible(x)):
+            null;
     } 
 
     filterBy(x){
