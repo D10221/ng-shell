@@ -7,9 +7,11 @@ import {
 
 import {layouts} from "./Layout";
 
-import {isVisible, moveElement}  from './TableElementTools';
 import {Cell} from "./Cell";
+
 import {Pager} from "./Pager";
+
+import {isTableElement, isVisible, moveElement} from "./TableElementTools";
 
 export class TnxTableCtrl implements Rx.Disposable {
     
@@ -128,7 +130,7 @@ export class TnxTableCtrl implements Rx.Disposable {
                 index:  i,
                 key: key ,
                 header: definition ? definition.header : key,
-                id: `${table.id}_column_${key}` /*Guid.newGuid()*/,
+                id: `${table.id}_column_${key}`,
                 parent: table,
                 elements : [],
                 isSelected: false,
@@ -201,19 +203,6 @@ export class TnxTableCtrl implements Rx.Disposable {
         
         for(var column of (row.parent as iTable).columns){
             
-            // cells.push( {
-            //     index : column.index,
-            //     id: `${row.key}_cell_${column.key}`,//Guid.newGuid(),
-            //     key: column.key,
-            //     value: row.source[column.key],
-            //     parent: row,
-            //     elements: [],
-            //     isSelected: false,
-            //     visibility: column.visibility,
-            //     role: TableElementRole.cell,
-            //     isEditing: false
-            // });
-            // Class Based its slower , 
             cells.push(new Cell(row, column))
         }
         
@@ -224,7 +213,7 @@ export class TnxTableCtrl implements Rx.Disposable {
     toggleSelected(e:TableElement):void;
     toggleSelected(e:any): void {
 
-        if(TnxTableCtrl.isTableElement(e)){
+        if(isTableElement(e)){
             e.isSelected = !e.isSelected;
             return;
         }
@@ -232,15 +221,6 @@ export class TnxTableCtrl implements Rx.Disposable {
         if(_.isArray(e)){
             _.forEach(e, this.toggleSelected )
         }
-    }
-    
-    static isTableElement(x:any) : boolean {
-        return x && (x as TableElement).role in [
-                TableElementRole.table,
-                TableElementRole.column,
-                TableElementRole.row,
-                TableElementRole.cell
-            ];         
     }
     
     toggleVisibility(e: TableElement){

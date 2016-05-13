@@ -2,7 +2,6 @@
 
 import {Pager} from "../../../src/components/dTable/Pager";
 import {Visibility} from "../../../src/infrastructure/interfaces";
-import {memoize, invalidate } from "../../../src/infrastructure/Memoize";
 
 
 describe('Pager', ()=> {

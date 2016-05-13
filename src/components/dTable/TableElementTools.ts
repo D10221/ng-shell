@@ -1,5 +1,15 @@
 import {TableElement, iTable, TableElementRole} from "./definitions";
+
 import {Visibility, SortDirection} from "../../infrastructure/interfaces";
+
+export function isTableElement(x:Object) : boolean {
+    return x && (x as TableElement).role in [
+            TableElementRole.table,
+            TableElementRole.column,
+            TableElementRole.row,
+            TableElementRole.cell
+        ];
+}
 
 export function isVisible(e: TableElement) :boolean{
     return e.visibility == Visibility.visible;

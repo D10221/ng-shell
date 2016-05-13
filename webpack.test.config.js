@@ -1,18 +1,27 @@
-var configFileName = __dirname + '/tsconfig.json';
+var configFileName = __dirname + '/test/tsconfig.json';
 
-console.log('configFileName:'+ configFileName);
+console.log('Webpack: configFileName:'+ configFileName);
+
+var outputFileName = "./built_test/bundled.js";
+
+console.log('Webpack: outputFileName: ' + outputFileName);
+
+var entry = "./test/tests.ts";
+
+console.log("Webpack: entry: " + entry ) ;
 
 module.exports = {
-    entry: "./test/tests.ts",
+    entry: entry,
     output: {
         path: __dirname,
-        filename: "../built_test/bundled.js"
+        filename: outputFileName
     },
     resolve: {
         extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js']
     },
     // Source maps support ('inline-source-map' also works)
-    devtool: 'source-map',
+    //devtool: 'source-map',
+    devtool: 'inline-source-map',
     module: {
         loaders: [
             { test: /\.css$/, loader: "style!css" },
@@ -22,10 +31,6 @@ module.exports = {
     ts:{
         configFileName: configFileName,
         compilerOptions:{
-            target: 'es5',
-            sourceMap: true,
-            experimentalDecorators: true,
-            emitDecoratorMetadata: true,
             sourceMap: true
         }
     }
