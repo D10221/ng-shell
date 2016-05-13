@@ -3,7 +3,7 @@
 import {EventArgs, IObservableThing, Visibility} from "../../infrastructure/interfaces";
 import {memoize, invalidate } from "../../infrastructure/Memoize";
 import {ObservableThingProperty} from "../../infrastructure/ObservableThingProperty";
-import isString = require("lodash/isString");
+
 import {firstEquals} from "../../infrastructure/Collections";
 
 interface PageBullet {
@@ -19,6 +19,8 @@ interface iPager {
     nextPage(n?: number, fast?:boolean );
     nextPage(direction?: string, n?: number, fast?:boolean );
 }
+
+var isString = _.isString;
 
 export class Pager implements iPager, IObservableThing, Rx.Disposable  {
     
@@ -53,6 +55,14 @@ export class Pager implements iPager, IObservableThing, Rx.Disposable  {
         
         this.nextPage = this.nextPage.bind(this);
         
+        var makeBullets = ()=>{
+            var bullets = this.build({
+                bulletsLen: this.bulletsLen,
+                collectionLen: this.collectionLength
+            });
+            this.pageBullets =  firstEquals(bullets, this.currentPage)
+        };
+        
         this.disposables.add(
             this.xEvents.asObservable()
                 .where (e=> e.sender == this )
@@ -60,11 +70,13 @@ export class Pager implements iPager, IObservableThing, Rx.Disposable  {
                     return _.includes(['pageLen','currentPage', 'bulletsLen', 'collectionLength'], e.args.key);
                 })
                 .subscribe( () => {
-                    invalidate(this, 'pageBullets');
+                   makeBullets()
                 })
         );
+        
+        makeBullets();
     }
-    
+     
     disposables = new Rx.CompositeDisposable();
     
     dispose(){
@@ -86,16 +98,7 @@ export class Pager implements iPager, IObservableThing, Rx.Disposable  {
      * has to be emoized, or angular crashes , too many changes 
      * @returns {PageBullet[]}
      */
-    @memoize
-    get pageBullets () : number[] {
-
-        var bullets = this.build({
-            bulletsLen: this.bulletsLen,
-            collectionLen: this.collectionLength
-        });
-
-        return firstEquals(bullets, this.currentPage)
-    }
+     pageBullets : number[]; 
 
     raiseNextEvent(key:string, value:any){
         this.xEvents.onNext({
@@ -144,6 +147,7 @@ export class Pager implements iPager, IObservableThing, Rx.Disposable  {
         if( !ok )  {
             return;
         }
+        
         this.currentPage = nextPagge;
     };
 

@@ -1,5 +1,6 @@
 typings/
 built/
+built_test/
 logs/*
 !.gitkeep
 node_modules/

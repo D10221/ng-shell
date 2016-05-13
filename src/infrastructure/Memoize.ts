@@ -3,8 +3,9 @@ var memoized = new  WeakMap<Object,any>();
 
 export function invalidate(target: Object, key: string){
     var cached = memoized.get(target);
-    if(cached){
-        cached[key] = null ;   
+    if (cached) {
+        cached.delete(key);
+        memoized.set(target, cached);
     }
 }
 
@@ -30,7 +31,7 @@ export function memoize (target: Object, name:string, descriptor: PropertyDescri
 function memoizationFor(obj) {
     let table = memoized.get(obj);
     if (!table) {
-        table = Object.create(null);
+        table = new WeakMap<any,any>();
         memoized.set(obj, table); 
     }
     return table;

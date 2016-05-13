@@ -110,22 +110,30 @@ describe('Pager', ()=> {
 
             //currentPage: 0 
             var bullets = pager.pageBullets;
+            console.log(bullets);
             expect(JSON.stringify(bullets)).toEqual("[0,1,2,3]");
+            
             pager.nextPage(); // 1
+            expect(pager.currentPage).toEqual(1);
             invalidate(pager, 'pageBullets');
             bullets = pager.pageBullets;
+            console.log(bullets);
             expect(JSON.stringify(bullets)).toEqual("[0,1,2,3]");
             
             pager.nextPage(); // 2
             bullets = pager.pageBullets;
+            console.log(bullets);
             expect(JSON.stringify(bullets)).toEqual("[0,1,2,3]");
             
             pager.nextPage(); // 3
+            expect(pager.currentPage).toEqual(3);
             bullets = pager.pageBullets;
+            console.log(bullets);
             expect(JSON.stringify(bullets)).toEqual("[0,1,2,3]");
             
             pager.nextPage(); // 4
             bullets = pager.pageBullets;
+            console.log(bullets);
             expect(pager.currentPage).toEqual(4);
             //invalidate(pager, 'pageBullets');
             expect(JSON.stringify(bullets)).toEqual("[4,5,6,7]");

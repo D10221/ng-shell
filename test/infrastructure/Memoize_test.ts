@@ -7,7 +7,7 @@ class Randomist{
 
     @memoize
     get value(): number {
-        return  this._value++;
+        return  this._value+= 1 ;
     }
     
     @memoize
@@ -22,25 +22,21 @@ describe('Memoize', ()=>{
       var r = new Randomist();
        
        var last : number = null ;
-       var accessCount = 0 ;
-        
-       var setValue = (value:number, ok: (prev: number, _new: number )=> boolean )=>{
-
-           if(!ok(last,value) && accessCount!=0){
+       _.range(100).forEach((n)=>{
+           
+           if(n >= 99) {
+               invalidate(r,"value");
+               last = r.value;
+               return;
+           }
+           
+           if( r.value != last && last != null){
                throw "It Doesn't work";
            }
-           accessCount++;
-           last = value;
-       };
-       
-       _.range(100).forEach(()=>{
-           setValue(r.value, (_last, _next) =>_last == _next);
+           last = r.value;
        });
         
-        invalidate(r,"value");
-        
-        expect(last != r.value).toEqual(true);
-        
-       
-   });
+       expect(r.value).toEqual(1);
+
+    });
 });

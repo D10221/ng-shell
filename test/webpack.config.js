@@ -1,8 +1,12 @@
+var configFileName = __dirname + '/tsconfig.json';
+
+console.log('configFileName:'+ configFileName);
+
 module.exports = {
     entry: "./test/tests.ts",
     output: {
         path: __dirname,
-        filename: "../built/test/bundled_test.js"
+        filename: "../built_test/bundled.js"
     },
     resolve: {
         extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js']
@@ -16,12 +20,13 @@ module.exports = {
         ]
     },
     ts:{
-        configFileName: __dirname+'/test/tsconfig.json',
+        configFileName: configFileName,
         compilerOptions:{
             target: 'es5',
             sourceMap: true,
             experimentalDecorators: true,
-            emitDecoratorMetadata: true
+            emitDecoratorMetadata: true,
+            sourceMap: true
         }
     }
 };
