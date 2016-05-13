@@ -3,13 +3,24 @@
 import {EventArgs, IObservableThing, Visibility} from "../../infrastructure/interfaces";
 import {memoize, invalidate } from "../../infrastructure/Memoize";
 import {ObservableThingProperty} from "../../infrastructure/ObservableThingProperty";
+import isString = require("lodash/isString");
+import {firstEquals} from "../../infrastructure/Collections";
 
 interface PageBullet {
     index: number;
     visible: boolean;
 }
 
-export class Pager implements IObservableThing, Rx.Disposable  {
+/***
+ * direction : [ 'asc' , 'desc ]
+ */
+interface iPager {
+    nextPage();
+    nextPage(n?: number, fast?:boolean );
+    nextPage(direction?: string, n?: number, fast?:boolean );
+}
+
+export class Pager implements iPager, IObservableThing, Rx.Disposable  {
     
     /***
      * IObservableThing implementation
@@ -24,6 +35,10 @@ export class Pager implements IObservableThing, Rx.Disposable  {
     @ObservableThingProperty
     currentPage: number = 0 ;
 
+    /***
+     * desired max bullets count 
+     * @type {number}
+     */
     @ObservableThingProperty
     bulletsLen = 5;
 
@@ -37,7 +52,6 @@ export class Pager implements IObservableThing, Rx.Disposable  {
         this.pageLen = _.isNumber(pageLen)? pageLen : 10 ;
         
         this.nextPage = this.nextPage.bind(this);
-        this.prevPage = this.prevPage.bind(this);
         
         this.disposables.add(
             this.xEvents.asObservable()
@@ -47,7 +61,6 @@ export class Pager implements IObservableThing, Rx.Disposable  {
                 })
                 .subscribe( () => {
                     invalidate(this, 'pageBullets');
-                    console.log(this.pageBullets)
                 })
         );
     }
@@ -60,20 +73,28 @@ export class Pager implements IObservableThing, Rx.Disposable  {
 
     id :any /*unique*/;
 
+
+    private build(data: {  bulletsLen: number,  collectionLen: number} ){
+        return _.chain(_.range(data.collectionLen))
+        //.chunk(data.pageLen)
+            .chunk(data.bulletsLen)
+            .value();
+    }
+    
     /***
      * replesents '< [0] [1] [3] ... >' page bullets
      * has to be emoized, or angular crashes , too many changes 
      * @returns {PageBullet[]}
      */
     @memoize
-    get pageBullets () : PageBullet[] {
-        return _.chain(_.range(this.pageLen))
-            .map(x=> { return {
-                index: x,
-                visible: true
-            }})
-            .chunk(this.bulletsLen)
-            .value()[ this.currentPage * this.bulletsLen ];
+    get pageBullets () : number[] {
+
+        var bullets = this.build({
+            bulletsLen: this.bulletsLen,
+            collectionLen: this.collectionLength
+        });
+
+        return firstEquals(bullets, this.currentPage)
     }
 
     raiseNextEvent(key:string, value:any){
@@ -101,35 +122,29 @@ export class Pager implements IObservableThing, Rx.Disposable  {
     };
 
     nextPage();
-    nextPage(n?: number);
     nextPage(n?: number, fast?:boolean );
-    nextPage(x?:any){
-
-        var n = arguments[0];
-        var fast = arguments.length > 0  ? arguments[1] : null;
+    nextPage(direction?: string, n?: number, fast?:boolean );
+    nextPage(...params:any[]) {
         
-        var nextPagge =  _.isNumber(n) ? n : this.currentPage + ((fast==true) ? this.bulletsLen : 1) ;
+        var pageNo = _.find(params, p=> _.isNumber(p)) ;
+        var direction  = _.find(params, p=> isString(p)) || 'asc';
+        var fast = _.find(params, p => _.isBoolean(p)) || false;
+        
+        var multiplier = ((fast==true) ? this.bulletsLen : 1);
+        
+        var nextPagge =  _.isNumber(pageNo) ? pageNo 
+            : direction == 'asc'
+                ? this.currentPage + multiplier  
+                : this.currentPage - multiplier ;
 
-        var ok = nextPagge * this.pageLen  < this.collectionLength;
-        console.log(`nextPagge: ${nextPagge} * pageLen:${this.pageLen } >=  collectionLength:${this.collectionLength} = ok: ${ok}`);
+        var ok = direction == 'asc'
+            ? nextPagge * this.pageLen  <= this.collectionLength
+            : nextPagge >= 0;
+        
         if( !ok )  {
             return;
         }
-
         this.currentPage = nextPagge;
-        console.log(`currentPage: ${this.currentPage}, starts:${this.pageStart}, ends:=${this.pageEnd}`);
-    }
-
-    prevPage () ;
-    prevPage(fast:boolean);
-    prevPage(fast?:any) {
-        var nextPagge = this.currentPage - ( fast == true?  this.bulletsLen : 1 ) ;
-        
-        if( nextPagge < 0 ){
-            return;
-        }
-        this.currentPage= nextPagge;
-        console.log(`currentPage: ${this.currentPage}, starts:${this.pageStart}, ends:=${this.pageEnd}`);
     };
 
     /***
