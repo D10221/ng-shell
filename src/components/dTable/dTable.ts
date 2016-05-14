@@ -1,4 +1,4 @@
-import {TnxTableCtrl} from "./TnxTableCtrl";
+import {TnxTableCtrl} from "./TableCtrl";
 import {isVisible} from "./TableElementTools";
 
 angular.module('tinyx.dTable', [])

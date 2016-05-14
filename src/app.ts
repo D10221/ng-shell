@@ -3,12 +3,13 @@
 import './components/version/version';
 import './components/version/interpolate-filter';
 import './components/version/version-directive';
+import './components/login/login';
+import './components/drop-down-menu/DropDownMenu'
 import './view1/view1';
 import './view2/view2';
 import './components/dTable/dTable';
 import {SideNav} from "./SideNav";
 import {NgShellRoot} from "./NgShellRoot";
-import './components/login/login';
 import {MessageBus} from "./infrastructure/MessageBus";
 
 // Declare app level module which depends on views, and components
@@ -16,6 +17,7 @@ angular.module('ngShell', [
         'ngRoute',
         'tinyx.dTable',
         'tinyx.login',
+        'tinyx.dropDownMenu',
         'ngShell.view1',
         'ngShell.view2',
         'ngShell.version'

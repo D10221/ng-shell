@@ -1,0 +1,21 @@
+<!-- ng-controller="DropDownMenuCtrl" -->
+<div class="drop-down-menu-container" >
+    <span ng-if="vm.header">{{vm.header}}</span>
+    <button id="{{ vm.id }}"
+            class="mdl-button mdl-js-button mdl-button--icon"
+            mdl-upgrade>
+        <i class="material-icons">{{vm.icon}}</i>
+    </button>
+    <ul class="mdl-menu mdl-menu--bottom mdl-js-menu mdl-js-ripple-effect"
+        for="{{ vm.id }}">
+    <!--Elements-->
+    <li class="mdl-menu__item"
+        ng-repeat="menuItem in vm.menuItems"
+        ng-click="menuItem.command.execute(menuItem)">
+        <div style="display: flex; flex-direction: row; justify-content:space-between;align-items: center; margin: 5px">
+            <span>{{menuItem.header}}</span>
+            <i class="material-icons" >{{menuItem.icon}}</i>
+        </div>
+    </li>
+    </ul>
+</div>

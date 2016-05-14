@@ -1,5 +1,49 @@
-<p>This is the partial for view 2.</p>
-<p>
-  Showing of 'interpolate' filter:
-  {{ 'Current version is v%VERSION%.' | interpolate }}
-</p>
+<!--<div ng-controller="View2Ctrl as vm">-->
+<div class="mdl-layout__container">
+
+    <div class="mdl-grid">
+        <p>This is the partial for view 2. ID={{vm.id}}</p>
+    </div>
+
+    <div class="md-grid">
+
+        <div class="mdl-cell--4-col">
+            <span> Drop down menu no config given </span>
+            <tnx-drop-down-menu></tnx-drop-down-menu>
+        </div>
+
+        <div class="mdl-cell--4-col">
+            <span>  2nd Drop down menu no config given </span>
+            <tnx-drop-down-menu></tnx-drop-down-menu>
+        </div>
+
+        <div class="mdl-cell--4-col">
+            <span> Drop down menu with config</span>
+            <tnx-drop-down-menu config="vm.options"></tnx-drop-down-menu>
+        </div>
+
+        <div class="mdl-cell--4-col">
+            <span> 4th Drop down menu same config</span>
+            <tnx-drop-down-menu config="vm.options"></tnx-drop-down-menu>
+        </div>
+
+        <div class="mdl-cell--4-col">
+            <span> Same Directive, same config, diff template</span>
+            <tnx-drop-down-menu
+                    template-url="templates/drop-down-menu/dropdownalt.html"
+                    config="vm.options"></tnx-drop-down-menu>
+        </div>
+
+
+        <div class="mdl-cell--4-col">
+            <span> Alt Drop down template menu same controller same config</span>
+            <tnx-drop-down-menu-alt config="vm.options"></tnx-drop-down-menu-alt>
+        </div>
+    </div>
+
+  <p>
+    Showing of 'interpolate' filter:
+    {{ 'Current version is v%VERSION%.' | interpolate }}
+  </p>
+
+</div>
