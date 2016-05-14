@@ -15,9 +15,11 @@ export class TinytStore<T> {
 
     prefix = "tinyx";
 
-    constructor(private key:string, private storage?:Storage) {
+    private storage:Storage ; 
+    
+    constructor(private key:string, storage?:Storage) {
 
-        storage = storage || localStorage;
+        this.storage = storage || localStorage;
 
         this.getItem = ()=> {
 
@@ -38,7 +40,7 @@ export class TinytStore<T> {
 
     setItem:(item:T) => void;
 
-    deleteItem(item:T) {
+    deleteItem: (item:T) => void = (item ) =>  {
         this.storage.removeItem(`${this.prefix}.${this.key}`);
     }
 }

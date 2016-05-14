@@ -177,7 +177,8 @@ export class LoginDialogViewModel {
         });
     }
 
-    private updateStore() {
+    private updateStore:() => void = () => {
+        
         if (this.rememberme) {
             console.log(`updating ${this.userData ? this.userData.toString(): "{}"}`);
             this.store.setItem(this.userData);

@@ -6,7 +6,7 @@
         <h4 class="mdl-dialog__title"  >{{loginVm.label}}</h4>
         <div style="padding-top: 30px;padding-left: 5px" ng-show="loginVm.isBusy">
             <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner "
-                 ng-click="loginVm.isBusy ? 'is-active'  : '' ">
+                 ng-class="loginVm.isBusy ? 'is-active'  : '' ">
             </div>
         </div>
         <div ng-show="loginVm.error != '' && loginVm.error != '?'" style="padding-top: 30px;padding-left: 5px" >
