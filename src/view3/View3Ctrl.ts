@@ -2,7 +2,7 @@ import {ObservableController} from "../infrastructure/ObservableController";
 
 import {DialogOptions, IDialogCommand} from "../components/dialog/dialog";
 import {ObservableThingProperty} from "../infrastructure/ObservableThingProperty";
-import {IObservableThing} from "../infrastructure/interfaces";
+import {IObservableThing, EventArgs} from "../infrastructure/interfaces";
 import {ObservableThing} from "../infrastructure/ObservableThing";
 
 
@@ -10,10 +10,9 @@ enum UniverseState {
     ok, destroyed
 }
 
-enum UniverseDestructorState{
+enum UniverseDestructorState {
     ready, inProgress, cancelled, completed
 }
-
 
 interface Universe extends IObservableThing{
     state: UniverseState ;
@@ -34,20 +33,48 @@ export class View3Ctrl extends ObservableController {
     constructor($scope) {
         
         super($scope);
-        
+
+        var destroyerStateChanged = this.destroyer.xEvents
+            .asObservable()
+            .where( e=> e.args.key == "state");
+
         this.disposables.add(
-            this.destroyer.xEvents
-                .asObservable()
-                .where( e=> e.args.key == "state"
-                    && e.args.value == UniverseDestructorState.completed
-                )
+                destroyerStateChanged
+                .where(e=> e.args.value == UniverseDestructorState.completed)
                 .subscribe(()=>{
                     this.universe.state = UniverseState.destroyed;
                 })
         );
+        
+        this.disposables.add(
+            this.destroyer.xEvents.asObservable()
+                .where(e=>e.args.key =="countDown")
+                .select(e=>e.args.value)
+                .subscribe(countDown=>{
+                    console.log(`Universe will be destroyed in ${countDown} seconds...`);
+                    $scope.$apply();
+                })
+        )
     }
+    
+    execute(what){
+        
+        what = what || (
+                this.destroyer.state == UniverseDestructorState.inProgress 
+                    ? 'cancel'
+                    : 'destroy'
+        );
+        
+        switch (what) {
+            case 'destroy':
+                this.destroyTheUniverse();
+                break;
 
-
+            case 'cancel':
+                this.destroyer.cancel();
+                break;
+        }
+    }
     destroyTheUniverse() {
 
         if(this.universe.state == UniverseState.destroyed){
@@ -98,37 +125,62 @@ class UniverseDestroyer extends ObservableThing{
     @ObservableThingProperty
     countDown ;
 
+    pauser = new Rx.Subject<boolean>()
+
     constructor() {
         super();
-       
+
+        Rx.Observable.interval(500)
+            .timeInterval()
+            .take(11)
+            .pausable(this.pauser)
+            .subscribe(e=>{
+                this.countDown = 10 - e.value ;
+            });
+
         this.disposables.add(
             this.xEvents.asObservable()
+                //.distinct(e=>e.args.value)
                 .where(e=>e.args.key == 'state'
                     && e.args.value == UniverseDestructorState.inProgress
                 )
                 .subscribe(()=>{
-                    var count = 9;
-                    Rx.Observable
-                        .interval(1000)
-                        .takeWhile(e=> this.state != UniverseDestructorState.cancelled)
-                        .take(10)
-                        .subscribe(()=>{
-                            this.countDown = count--;
-                        })
+                    this.pauser.onNext(true)
                 })
         );
-        
+
         this.disposables.add(
             this.xEvents.asObservable()
-                .where(e=>
-                        e.args.key == 'countDown'
-                        && e.args.value == 0 )
-                //.take(1)
+                //.distinct(e=>e.args.value)
+                .where(e=>e.args.key == 'state'
+                    && e.args.value == UniverseDestructorState.cancelled
+                )
                 .subscribe(()=>{
-                    this.state = UniverseDestructorState.completed
+                    this.pauser.onNext(false)
                 })
         );
+
+
+        this.disposables.add(
+            this.xEvents.asObservable()
+                .where(this.isCuntDownCompleted)
+                .subscribe(this.onCountDownCompleted)
+        );
     }
+
+    isCountDownInProgress(count:number): (e:EventArgs)=> boolean {
+        return (e)=>
+            this.state != UniverseDestructorState.cancelled
+            && count >= 0;
+    }
+
+    isCuntDownCompleted(e:EventArgs): boolean {
+        return e.args.key == 'countDown'
+            && e.args.value == 0;
+    }
+    onCountDownCompleted = ()=>{
+        this.state = UniverseDestructorState.completed
+    };
 
     destroy(){
         this.state = UniverseDestructorState.inProgress;
