@@ -1,11 +1,11 @@
-import {LoginDialogViewModel, Dialog} from "./LoginDialogViewModel";
+import {LoginDialogViewModel} from "./LoginDialogViewModel";
+import {Dialog} from "../../infrastructure/interfaces";
 
 angular.module('tinyx.login',[])
 .controller('LoginDialogViewModel', LoginDialogViewModel)
 .directive('loginDialog',()=>{
     return {
         templateUrl: 'templates/login/login-dialog.html',
-        // scope: { mbus: "="},
         controller: 'LoginDialogViewModel',
         controllerAs: 'loginVm',
         compile:()=>{

@@ -10,13 +10,12 @@ angular.module('tinyx.dropDownMenu',[])
         controller: 'DropDownMenuCtrl',
         controllerAs: 'vm',
         templateUrl: function(element, attr) {
-            console.log(attr.config);
-            return attr.templateUrl ? attr.templateUrl : 'templates/drop-down-menu/dropdown.html'
+            return attr.templateUrl;
         },
         scope:{
             config: "="
         },
-        compile:()=> {
+        compile:  ()=> {
             return {
                 pre:(scope: DropDownMenuScope,element: ng.IAugmentedJQuery, attr: ng.IAttributes) => {
                     if(scope.vm){

@@ -6,14 +6,8 @@ import {Guid} from "../../infrastructure/Guid";
 import {UserData} from "./definitions";
 import {TinytStore} from "../../infrastructure/TinytStore";
 import {RelayCommand} from "../../infrastructure/Command";
-import {EventArgs} from "../../infrastructure/interfaces";
+import {EventArgs, Dialog} from "../../infrastructure/interfaces";
 import {MessageBus} from "../../infrastructure/MessageBus";
-
-
-export interface Dialog extends HTMLElement{
-    showModal();
-    close();
-}
 
 export class LoginDialogViewModel {
 
@@ -61,12 +55,7 @@ export class LoginDialogViewModel {
 
     private _dialog: Dialog ;
     
-    get dialog():Dialog {
-        return this._dialog;
-    }
-    set dialog(value:Dialog){
-        this._dialog = value;
-    }
+    dialog:Dialog;
 
     static $inject = ['$scope', 'MessageBus'];
     
@@ -103,7 +92,9 @@ export class LoginDialogViewModel {
         };
 
         this.close = ()=> {
-            this.dialog.close();
+            if(this.dialog){
+                this.dialog.close();
+            }
         };
 
         this.login = ()=> {

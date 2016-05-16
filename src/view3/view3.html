@@ -1,0 +1,29 @@
+<!--<div ng-controller="View3Ctrl as vm">-->
+<div>
+    <div style="margin: 20px">
+        <button class="mdl-button" style="margin: 20px"
+                ng-click="vm.destroyTheUniverse()"> destroy the Universe ?</button>
+    </div>
+    <div style="margin: 20px">
+
+        <span ng-show="vm.destroyer.state == 1">{{vm.destroyer.countDown}}</span>
+
+        <span ng-if="vm.universe.state == 1">
+                The Universe has been destroyed
+                <p>Who is reading this message?</p>
+        </span>
+        <span ng-show="vm.destroyer.state == 2">
+            Universe destruction cancelled;
+        </span>
+    </div>
+
+    <tnx-dialog
+            xid="'universe-destroy-dialog'"
+            template-url="src/components/dialog/dialog.html"
+            owner="vm"
+            header="'Confirm'">
+        <span ng-if="vm.universe.state == 0">Do you Really want to destroy the universe</span>
+        <span ng-if="vm.universe.state == 1">you can't destroy the universe twice</span>
+    </tnx-dialog>
+
+</div>

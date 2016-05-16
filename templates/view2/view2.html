@@ -9,22 +9,29 @@
 
         <div class="mdl-cell--4-col">
             <span> Drop down menu no config given </span>
-            <tnx-drop-down-menu></tnx-drop-down-menu>
+            <tnx-drop-down-menu
+                    template-url="templates/drop-down-menu/dropdown.html"></tnx-drop-down-menu>
         </div>
 
         <div class="mdl-cell--4-col">
             <span>  2nd Drop down menu no config given </span>
-            <tnx-drop-down-menu></tnx-drop-down-menu>
+            <tnx-drop-down-menu
+                    template-url="templates/drop-down-menu/dropdown.html">
+            </tnx-drop-down-menu>
         </div>
 
         <div class="mdl-cell--4-col">
             <span> Drop down menu with config</span>
-            <tnx-drop-down-menu config="vm.options"></tnx-drop-down-menu>
+            <tnx-drop-down-menu
+                    template-url="templates/drop-down-menu/dropdown.html"
+                    config="vm.options"></tnx-drop-down-menu>
         </div>
 
         <div class="mdl-cell--4-col">
             <span> 4th Drop down menu same config</span>
-            <tnx-drop-down-menu config="vm.options"></tnx-drop-down-menu>
+            <tnx-drop-down-menu config="vm.options"
+                                template-url="templates/drop-down-menu/dropdown.html">
+            </tnx-drop-down-menu>
         </div>
 
         <div class="mdl-cell--4-col">

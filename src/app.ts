@@ -5,23 +5,27 @@ import './components/version/interpolate-filter';
 import './components/version/version-directive';
 import './components/login/login';
 import './components/drop-down-menu/DropDownMenu'
+import './components/dialog/dialog';
 import './view1/view1';
 import './view2/view2';
+import './view3/view3';
 import './components/dTable/dTable';
 import {SideNav} from "./SideNav";
 import {NgShellRoot} from "./NgShellRoot";
 import {MessageBus} from "./infrastructure/MessageBus";
 
 // Declare app level module which depends on views, and components
-angular.module('ngShell', [     
-        'ngRoute',
-        'tinyx.dTable',
-        'tinyx.login',
-        'tinyx.dropDownMenu',
-        'ngShell.view1',
-        'ngShell.view2',
-        'ngShell.version'
-    ])
+angular.module('ngShell', [
+    'ngRoute',
+    'tinyx.dTable',
+    'tinyx.login',
+    'tinyx.dropDownMenu',
+    'tinyx.dialog',
+    'ngShell.view1',
+    'ngShell.view2',
+    'ngShell.view3',
+    'ngShell.version'
+])
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.otherwise({redirectTo: '/view1'});
     }])
@@ -31,8 +35,8 @@ angular.module('ngShell', [
     .directive('onEnter', function () {
         return function (scope, element, attrs) {
             element.bind("keydown keypress", function (event) {
-                if(event.which === 13) {
-                    scope.$apply(function (){
+                if (event.which === 13) {
+                    scope.$apply(function () {
                         scope.$eval(attrs.onEnter);
                     });
 
@@ -62,14 +66,14 @@ angular.module('ngShell', [
     // }])
     // Material Design Lite (mdl)
     // https://github.com/jadjoubran/angular-material-design-lite/blob/master/src/angular-material-design-lite.js
-    .directive('mdlUpgrade', function($timeout) {
+    .directive('mdlUpgrade', function ($timeout) {
 
         return {
             restrict: 'A',
-            compile: function() {
+            compile: function () {
                 return {
                     post: function postLink(scope, element) {
-                        $timeout(function() {
+                        $timeout(function () {
                             try {
                                 componentHandler.upgradeAllRegistered();
                             } catch (e) {
@@ -83,9 +87,9 @@ angular.module('ngShell', [
 
     })
     // Material Design Lite (mdl)
-    .run(($rootScope,$timeout)=> {
-        $rootScope.$on('$viewContentLoaded', ()=>{
-            $timeout(()=>{
+    .run(($rootScope, $timeout)=> {
+        $rootScope.$on('$viewContentLoaded', ()=> {
+            $timeout(()=> {
                 componentHandler.upgradeAllRegistered();
             })
         })
